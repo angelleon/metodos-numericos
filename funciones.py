@@ -21,20 +21,134 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301, USA.
 """
+from enum import Enum
+from math import e
 
 
-class TipoFuncion(enumerate):
+class TipoFuncion(Enum):
+	funcion = -1
 	constante = 0
 	identidad = 1
+	potencia = 2
+	triginometrica = 3
+	trigonometrica_inversa = 4
+	exponencial = 5
+	logaritmica = 6
+	suma = 7
+	producto = 8
+	cociente = 9
+	composicion = 10
+	valor_absoluto = 11
 
 
 class Funcion(object):
-	def __init__(self, tipo, subtipo=0):
-		self.tipo = tipo
-		self.subtipo = subtipo
+	def __init__(self, variable='x'):
+		self.variable = variable
+		self.tipo = TipoFuncion.funcion
+		self.valor = None
 
 	def __str__(self):
 		return "prototipo de funcion vacia"
 
+	def __add__(self, other):
+		pass
+
+	def __sub__(self, other):
+		pass
+
+	def __mul__(self, other):
+		pass
+
+	def __pow__(self, power, modulo=None):
+		pass
+
+	def evaluar(self):
+		pass
+
 	def derivar(self):
 		pass
+
+	def integrar(self):
+		pass
+
+
+class FuncionConstante(Funcion):
+	def __init__(self, valor):
+		super().__init__('')
+		self.tipo = TipoFuncion.constante
+		try:
+			self.valor = float(valor)
+		except ValueError:
+			print("Recibido objeto:", type(valor))
+			raise
+
+	def __str__(self):
+		return str(self.valor)
+
+	def __add__(self, other):
+		return self.valor + other.valor
+
+	def evaluar(self):
+		return self.valor
+
+	def derivar(self):
+		return FuncionConstante(0)
+
+	def integrar(self):
+		return Potencia(1, 1)
+
+
+class Identidad(Funcion):
+	def __init__(self, variable='x'):
+		super().__init__()
+		self.variable = variable
+		self.valor = variable
+
+	def __str__(self):
+		return str(self.variable)
+
+	def __add__(self, other):
+		return self.valor + other.valor
+
+	def derivar(self):
+		return FuncionConstante(1)
+
+
+
+class Potencia(Funcion):
+	def __init__(self, coeficiente=FuncionConstante(1), variable=Identidad('x'), exponente=FuncionConstante(1)):
+		super().__init__()
+		self.tipo = TipoFuncion.potencia
+		self.coeficiente = coeficiente
+		self.exponente = exponente
+		self.valor = coeficiente * variable ** exponente
+
+	def __str__(self):
+		return str(self.coeficiente) + "x^" + str(self.exponente)
+
+
+class Polinomio(Funcion):
+	def __init__(self, coeficientes=(1, 0), exponentes=(1, 0)):
+		super().__init__()
+		self.tipo = TipoFuncion.suma
+		self.terminos = []
+		for i in range(len(exponentes)):
+			self.terminos.append(Potencia(coeficientes[i], exponentes[i]))
+
+
+class Exponencial(Funcion):
+	def __init__(self, base=e, exponente=Identidad('x')):
+		super().__init__()
+
+
+def obtener_tokens(raw_func):
+	return False
+
+
+def clasificar_tokens(tokens):
+	return False
+
+
+def analizador_func(raw_func):
+	tokens = obtener_tokens(raw_func)
+	tokens = clasificar_tokens(tokens)
