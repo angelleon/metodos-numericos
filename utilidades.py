@@ -1,11 +1,33 @@
 #!/bin/env python3
 # -*- coding: utf8 -*-
+
+"""
+utilidades.py
+
+Copyright 2017 Angel Leon <luianglenlop@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+MA 02110-1301, USA.
+"""
+
 # import sys
 import re
 # import time
 import numpy as np
 import matplotlib.pyplot as plt
-import numpy.polynomial.polynomial
+# import numpy.polynomial.polynomial
 
 
 def graficar_poly(coeficientes, exponentes, x0, xf, raiz):
@@ -13,12 +35,14 @@ def graficar_poly(coeficientes, exponentes, x0, xf, raiz):
 		xf = raiz + abs(x0 - raiz)
 	else:
 		x0 = raiz - abs(raiz - xf)
-	x_vals = np.linspace(x0, xf, 50) # abs(xf - x0)/50.0)
+	x_vals = np.linspace(x0, xf, 51)  # abs(xf - x0)/50.0)
 	y_vals = [evaluar_poly(x, coeficientes, exponentes) for x in x_vals]
 	plt.axhline(0, color='black')
 	plt.axvline(0, color='black')
+	plt.grid(True)
 	plt.plot(x_vals, y_vals)
-	plt.plot([raiz], [0], 'r')
+	print(raiz)
+	plt.plot([raiz], [0.0], 'ro')
 	plt.show()
 	"""fig, ax = plt.subplots()
 	# ax.plot(x_vals, evaluar_poly(x_vals, coeficientes, exponentes))
@@ -40,10 +64,45 @@ def convertir_fracciones():
 	motor = re.compile("[-+]?[0-9]|[-+]?[0-9]?\.[0-9]+")
 
 
+def derivar_poly(coeficientes, exponentes):
+	deriv_coeficientes = []
+	deriv_exponentes = []
+	for i in range(len(coeficientes)):
+		if exponentes[i] != 0:
+			deriv_coeficientes.append(coeficientes[i] * exponentes[i])
+			deriv_exponentes.append(exponentes[i] - 1)
+	return [deriv_coeficientes, deriv_exponentes]
+
+
 class Numero(enumerate):
 	flotante = 1
 	entero = 2
 
+
+class FuncionTipo(enumerate):
+	constante = 0
+	polinomial = 1
+	trigonometrica = 2
+	exponencial = 3
+	logaritmica = 4
+
+
+class Funcion(object):
+	def __init__(self, tipo, subtipo=0):
+		self.tipo = tipo
+		self.subtipo = subtipo
+		self.terminos = []
+
+	def __str__(self):
+		return str([termino for termino in self.terminos])
+
+	def derivar(self):
+		pass
+
+
+class Polinomio(Funcion):
+	def derivar(self):
+		pass
 
 class ErrorEntrada(Exception):
 	pass
@@ -54,15 +113,18 @@ class ErrorCoeficiente(ErrorEntrada):
 
 
 class FuncionConstante(ErrorEntrada):
-	pass
+	def __str__(self):
+		return "función constante"
 
 
 class CaracterInvalido(ErrorEntrada):
-	pass
+	def __str__(self):
+		return "caracter invalido"
 
 
 class FuncionMultivariable(ErrorEntrada):
-	pass
+	def __str__(self):
+		return "función multivariable"
 
 
 def convertir_a_numero(raw_numero):
@@ -191,7 +253,8 @@ def obtener_terminos_x(raw_poly):
 		termino = motor.search(raw_poly)
 		if termino is not None:
 			terminos.append(termino.group())
-		else: break
+		else:
+			break
 		raw_poly = raw_poly[0:termino.start()] + raw_poly[termino.end():]
 	return [terminos, raw_poly]
 
@@ -207,6 +270,7 @@ def reducir_terminos_lineales(terminos):
 def obtener_terminos_lineales(raw_poly):
 	print("funcion obtener_terminos_lineales")
 	print(raw_poly)
+
 	motor = re.compile("([-+]?[0-9]+)|([-+]([0-9]*\.[0-9]+))")
 	terminos = []
 	termino = motor.search(raw_poly)
@@ -286,6 +350,7 @@ def obtener_coeficientes(terminos):
 
 def obtener_exponentes(terminos):
 	print("funcion obtener_exponentes")
+	print(terminos)
 	exponentes = []
 	for termino in terminos:
 		coincidencia = re.search("\^[0-9]+", termino)
@@ -297,11 +362,13 @@ def obtener_exponentes(terminos):
 			exponentes.append(1)
 		else:
 			exponentes.append(0)
+	print(exponentes)
 	return exponentes
 
 
 def buscar_duplicados(lista):
 	print("funcion buscar_duplicados")
+	print(lista)
 	repetidos = set()
 	indices = []
 	for i in range(0, len(lista)):
@@ -319,11 +386,13 @@ def buscar_duplicados(lista):
 			if i == lista[j]:
 				indices[cont].append(j)
 		cont += 1
+	print(indices)
 	return indices
 
 
 def reducir_terminos(coeficientes, exponentes):
 	print("funcion reducir_terminos")
+	print(coeficientes, exponentes)
 	reducibles = buscar_duplicados(exponentes)
 	if reducibles is None:
 		return None
@@ -344,6 +413,7 @@ def reducir_terminos(coeficientes, exponentes):
 		if i not in indice_descartados:
 			coef_reducidos.append(coeficientes[i])
 			exp_reducidos.append(exponentes[i])
+	print(coef_reducidos, exp_reducidos)
 	return [coef_reducidos, exp_reducidos]
 
 
@@ -421,7 +491,6 @@ def probar_intervalo(coeficientes, exponentes, x0, xf):
 			else:
 				return [xi, xf]
 		xi += dx
-
 	return False
 
 """
