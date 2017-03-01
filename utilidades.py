@@ -22,17 +22,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301, USA.
 """
 
-# import sys
+
 import re  # modulo de expresiones regulares
-# import time
 import numpy as np
 import matplotlib.pyplot as plt
 
+"""
+funciones comunes para los programas de metodos numericos
+"""
+
+# ToDo: hacer algo para centralizar el manejo de las cosas por hacer (ToDo's)
+# ToDo: implementar el paradigma OO
+# ToDo: lanzar excepciones, por algo están declaradas
+# ToDo: reimplementar el modo interactivo en todos los programas
+# ToDo: hacer funcion main más modular en todos los programas
+# ToDo: mover analizador lexico a otro archivo
+
 
 class Polinomio:  # no usada esta clase hasta ahora, la mayoria del programa esta hecho con el paradigma imperativo
-	def __init__(self, coef=[1, 0], exp=[1, 0]):
-		self.coef = coef
-		self.exp = exp
+	def __init__(self, coef=None, exp=None):
+		if coef is not None:
+			self.coef = coef
+			self.exp = exp
+		else:
+			self.coef = [1, 0]
+			self.exp = [1, 0]
 
 	def evaluar(self, x):
 		imagen = 0
@@ -45,9 +59,9 @@ class Polinomio:  # no usada esta clase hasta ahora, la mayoria del programa est
 		exp_deriv = []
 		for i in range(len(self.coef)):
 			if self.exp[i] > 0:
-			exp_deriv.append(self.exp[i] - 1) 
-			coef_deriv.append(self.coef[i] * self.exp[i])
-		return Polinomio(coef_deriv, exp_deriv)  # Devuelve un objeto polinomio
+				exp_deriv.append(self.exp[i] - 1)
+				coef_deriv.append(self.coef[i] * self.exp[i])
+		return Polinomio(coef_deriv, exp_deriv)  # Devuelve la derivada del polinomio como objeto
 
 
 def graficar_poly(coeficientes, exponentes, x0, xf, raiz, intervalo_original=None):
@@ -59,14 +73,14 @@ def graficar_poly(coeficientes, exponentes, x0, xf, raiz, intervalo_original=Non
 		xf = raiz + abs(x0 - raiz)
 	else:
 		x0 = raiz - abs(raiz - xf)
-	x_vals = np.linspace(x0, xf, 51)  # valores de x a graficar
+	x_vals = np.linspace(x0, xf, 51)  # valores de x a graficar, 51 puntos equidistantes en el intervalo
 	y_vals = [evaluar_poly(x, coeficientes, exponentes) for x in x_vals] # imagenes de los valores de x de la linea previa
-	plt.axhline(0, color='black') # ejes
+	plt.axhline(0, color='black')  # ejes, por defecto no parecen
 	plt.axvline(0, color='black')
 	plt.grid(True)
 	plt.plot(x_vals, y_vals, linewidth=1.0)
 	plt.scatter([raiz], [0.0])  # graficar la raiz
-	# todo establecer el ratio de la rejilla
+	# ToDo: establecer el ratio de la rejilla
 	plt.grid(True) # rejilla
 	plt.plot(x_vals, y_vals) # graficar polinomio
 	plt.show()
@@ -81,13 +95,16 @@ def derivar_poly(coeficientes, exponentes):  # deriva, planeado reemplazar al us
 			deriv_exponentes.append(exponentes[i] - 1)
 	return [deriv_coeficientes, deriv_exponentes]
 
+
 # excepciones al analizar la entrada del usuario
 class ErrorEntrada(Exception):
-	pass
+	def __str__(self):
+		return "Error en la entrada de datos"
 
 
 class ErrorCoeficiente(ErrorEntrada):
-	pass
+	def __str__(self):
+		return "Error en los coeficientes del polinomio"
 
 
 class FuncionConstante(ErrorEntrada):  # lanzada si al reducir los terminos se obtien sólo constantes
@@ -105,7 +122,8 @@ class FuncionMultivariable(ErrorEntrada):  # lanzada cuando hay varias literales
 	def __str__(self):
 		return "función multivariable"
 
-# todo terminar para poder ingresar coeficientes como fracciones
+
+# ToDo: terminar para poder ingresar coeficientes como fracciones
 def convertir_fraccion(fraccion):
 	motor = re.compile("[-+]?[0-9]+|[-+]?[0-9]\.[0-9]+")
 	numerador = motor.search(fraccion)
@@ -115,7 +133,8 @@ def convertir_fraccion(fraccion):
 	denominador = float(denominador.group())
 	return numerador/denominador
 
-# todo implementar en OO
+
+# ToDo: implementar en OO
 def evaluar_poly(x, coeficientes, exponentes):  # obtener la imagen de f en el punto x, por reemplazar en paradigma OO
 	imagen = 0
 	for i in range(0, len(coeficientes)):
@@ -133,26 +152,6 @@ def introducir_poly():  # para modo interactivo
 			print("\nIntente de nuevo")
 
 
-def introducir_extremos():
-	while True:
-		try:
-			x0 = float(input("Introduzca el extremo izquierdo del intervalo\nx0: "))
-		except ValueError:
-			print("introduzca un valor numerico")
-			continue
-		break
-	while True:
-		try:
-			xf = float(input("Introduzca el extremo derecho del intervalo\nxf: "))
-		except ValueError:
-			print("introduzca un valor numerico")
-			continue
-		if xf == x0:
-			print("x0 y xf deben ser diferentes")
-			continue
-		break
-	return [x0, xf]
-
 
 def introducir_n_confianza():
 	while True:
@@ -168,7 +167,9 @@ def introducir_n_confianza():
 	return n
 
 
-def introducir_parametros():  #para el modo interactivo
+# ToDo: programas diferente requieren parametros diferentes
+# hacer uno por programa o <inserte solución aquí> :/
+def introducir_parametros():  # para el modo interactivo
 	polinomio = introducir_poly()
 	intervalo = introducir_intervalo()
 	n_confianza = introducir_n_confianza()
@@ -195,7 +196,7 @@ def introducir_intervalo():
 		if intervalo:
 			break
 	return intervalo
-# TODO llamar a analizar fracciones
+# ToDo: llamar a analizar fracciones
 
 
 def analizar_intervalo(x0, xf):
@@ -210,13 +211,12 @@ def introducir_poly_dummy():
 	pass
 
 
-def buscr_carac_invalidos(raw_poly):  #busca errores de tipeo
+def buscr_carac_invalidos(raw_poly):  # busca errores de tipeo
 	motor = re.compile("[^a-z0-9-+^./]")
 	if motor.search(raw_poly) is not None:
 		mostrar_error(motor.search(raw_poly).group(), raw_poly)
 		raise CaracterInvalido  # lanzar la excepcion en caso de que algo en el string no se pueda interprtetar
 	# correctamente
-
 
 
 def obtener_terminos_x(raw_poly):
@@ -266,7 +266,7 @@ def obtener_terminos(raw_poly):
 	return terminos
 
 
-def mostrar_error(error, raw_poly):
+def mostrar_error(error, raw_poly):  # muestra la parte de la cadena de entrada que no se reconoce
 	motor = re.compile(error)
 	coincidencia = motor.search(raw_poly)
 	indicador = "^~~~~~"
@@ -276,7 +276,8 @@ def mostrar_error(error, raw_poly):
 	print("\n\t" + raw_poly + '\n\t' + indicador)
 
 
-def obtener_variable(terminos):
+def obtener_variable(terminos):  # busca la variable, comunmente x, que se usa en el polinomio, en caso de encontrar 
+	# más de un caracter en el rango a-z se considera una funcion multivariable, posiblemente por erro de tipeo
 	motor = re.compile("[a-z]")
 	variables = set()
 	for i in terminos:
@@ -287,9 +288,9 @@ def obtener_variable(terminos):
 	if len(variables) > 1:
 		print("Ingrese funciones de una variable")
 		raise FuncionMultivariable
-	elif len(variables) == 0:
+	elif len(variables) == 0:  # comprueba que haya al menos un termino con una variable
 		print("El método no se puede aplicar a funciones constantes")
-		return None
+		raise FuncionConstante
 	return variable
 
 
@@ -388,10 +389,11 @@ def ordenar(coeficientes, exponentes, terminos):  # ordena linstas paralelas, lo
 	return [coef_ordenados, exponentes, term_ordenados]
 
 
+# ToDo: lanzar excepciones en vez de retornar None
 def analizar_poly(raw_poly):
 	if len(raw_poly) == 0:
 		print("No hay entrada")
-		return
+		raise ErrorEntrada
 	raw_poly = raw_poly.lower()
 	terminos = obtener_terminos(raw_poly)
 	if isinstance(terminos, str):
@@ -420,19 +422,24 @@ def analizar_poly(raw_poly):
 	return [coeficientes, exponentes, polinomio, variable]
 
 
-def probar_intervalo(coeficientes, exponentes, x0, xf):
+def probar_intervalo(coeficientes, exponentes, x0, xf):  # busca si en el intervalo hay raices para evitar usar el
+	# metodo en caso de que no
 	if evaluar_poly(x0, coeficientes, exponentes) * evaluar_poly(xf, coeficientes, exponentes) < 0:
 		return [x0, xf]
 	dx = abs(x0 - xf) / float(100)
 	xi = x0
-	for i in range(0, 100):
+	for i in range(100):
 		if evaluar_poly(xi, coeficientes, exponentes) * evaluar_poly(xf, coeficientes, exponentes) < 0:
-			if i <= 50:
+			if i <= 50:  # devuelve el intervalo más corto
 				return [x0, xi]
 			else:
 				return [xi, xf]
 		xi += dx
 	return False
+
+if __name__ == '__main__':
+	print("Funciones comunes para metodos numericos\nEste archivo no hace nada por si mismo, importe para usar las "
+	      "funciones declaradas aqui en otros programas")
 
 """
 Escribir un programa que lea un polinomio de grado n>1 e implemente el metodo de newton para aproximar una raiz

@@ -26,6 +26,8 @@ import sys
 import time
 from utilidades import *
 
+# ToDo implementar paradigma OO
+
 
 def graficar_newton(coeficiente, exponentes, x0, raiz, puntos):
 	if raiz < x0:
@@ -59,11 +61,9 @@ def newton_raphson(coeficientes, exponentes, x0, n_signif):
 		fx0 = evaluar_poly(x0, coeficientes, exponentes)
 		(coef_deriv, exp_deriv) = derivar_poly(coeficientes, exponentes)
 		dfx0 = evaluar_poly(x0, coef_deriv, exp_deriv)
-		# TODO completar lista de puntos
 		xi = x0 - (fx0/dfx0)
 		puntos[0].append([x0, xi])
 		puntos[1].append([fx0, 0])
-		# puntos[1].append([[fx0], [0]])
 		error = (xi - x0) * 100.0/xi
 		x0 = xi
 		cont += 1
@@ -118,29 +118,16 @@ def main(argv):
 		else:
 			print("Error en el polinomio")
 			return
-	# except ()
-	# except (ErrorCoeficiente, ErrorEntrada, CaracterInvalido, FuncionMultivariable):
-	# 	raise
-	coeficientes = parametros[0]
-	exponentes = parametros[1]
-	polinomio = parametros[2]
-	variable = parametros[3]
-	x0 = parametros[4]
-	# xf = parametros[5]
-	n_signif = parametros[5]
+	(coefi, expon, polin, variable, x0, n_signif) = parametros
 	if n_signif < 1:
 		print("CIFRAS_SIGNIFICATIVAS debe ser mayor o igual a 1")
 		return
-	print("Aplicando Newton-Raphson a", polinomio, "a partir de x=", x0)
+	print("Aplicando Newton-Raphson a", polin, "a partir de x=", x0)
 	inicio_segundos = time.time()
 	inicio_procesador = time.clock()
-	(raiz, iteraciones, error, puntos) = newton_raphson(coeficientes, exponentes, x0, n_signif)
-	# resultados = bisectar(coeficientes, exponentes, x0, xf, n_signif)
+	(raiz, iteraciones, error, puntos) = newton_raphson(coefi, expon, x0, n_signif)
 	tiempo_ejecucion = time.clock() - inicio_procesador
 	tiempo_segundos = time.time() - inicio_segundos
-	# raiz = resultados[0]
-	# iteraciones = resultados[1]
-	# error = resultados[2]
 	print("Resultados:")
 	print("Raiz encontrada en", variable, "=", raiz)
 	print("Iteraciones: ", iteraciones)
@@ -148,9 +135,11 @@ def main(argv):
 	print("Tiempo transcurrido :", tiempo_segundos, "segundos")
 	print("Tiempo de procesador:", tiempo_ejecucion, "segundos")
 	input("presione enter para graficar la función")
-	graficar_newton(coeficientes, exponentes, x0, raiz, puntos)
-	# graficar_poly(coeficientes, exponentes, x0, xf, raiz)
+	graficar_newton(coefi, expon, x0, raiz, puntos)
 
 
 if __name__ == '__main__':
-	main(sys.argv)
+	try:
+		main(sys.argv)
+	except KeyboardInterrupt:
+		print("Operación cancelada")
