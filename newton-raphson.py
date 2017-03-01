@@ -27,21 +27,47 @@ import time
 from utilidades import *
 
 
+def graficar_newton(coeficiente, exponentes, x0, raiz, puntos):
+	if raiz < x0:
+		x0 = raiz - abs(x0 - raiz)
+		xf = raiz + abs(x0 - raiz)
+	elif raiz > x0:
+		xf = raiz + abs(x0 - raiz)
+	else:
+		raise ErrorEntrada
+	x_vals = np.linspace(x0, xf, 51)
+	y_vals = [evaluar_poly(x, coeficiente, exponentes) for x in x_vals]
+	plt.axhline(0, color='black')
+	plt.axvline(0, color='black')
+	plt.grid(True)
+	plt.plot(x_vals, y_vals)
+	plt.scatter([raiz], [0.0])
+	print(puntos)
+	for i in range(len(puntos[0])):
+		plt.scatter(puntos[0][i][0], puntos[1][i][0])
+		plt.plot(puntos[0][i], puntos[1][i], linewidth=0.5)
+	plt.show()
+
+
 def newton_raphson(coeficientes, exponentes, x0, n_signif):
 	print("funcion newton_raphson")
 	tolerancia = 0.05 * 10 ** (2 - n_signif)
 	error = tolerancia * 2
 	cont = 0
+	puntos = [[], []]
 	while abs(error) > tolerancia:
 		fx0 = evaluar_poly(x0, coeficientes, exponentes)
 		(coef_deriv, exp_deriv) = derivar_poly(coeficientes, exponentes)
 		dfx0 = evaluar_poly(x0, coef_deriv, exp_deriv)
+		# TODO completar lista de puntos
 		xi = x0 - (fx0/dfx0)
+		puntos[0].append([x0, xi])
+		puntos[1].append([fx0, 0])
+		# puntos[1].append([[fx0], [0]])
 		error = (xi - x0) * 100.0/xi
 		x0 = xi
 		cont += 1
-	return [xi, cont, error]
-
+	return [xi, cont, error, puntos]
 
 
 def modo_interactivo():
@@ -108,7 +134,7 @@ def main(argv):
 	print("Aplicando Newton-Raphson a", polinomio, "a partir de x=", x0)
 	inicio_segundos = time.time()
 	inicio_procesador = time.clock()
-	(raiz, iteraciones, error) = newton_raphson(coeficientes, exponentes, x0, n_signif)
+	(raiz, iteraciones, error, puntos) = newton_raphson(coeficientes, exponentes, x0, n_signif)
 	# resultados = bisectar(coeficientes, exponentes, x0, xf, n_signif)
 	tiempo_ejecucion = time.clock() - inicio_procesador
 	tiempo_segundos = time.time() - inicio_segundos
@@ -122,6 +148,7 @@ def main(argv):
 	print("Tiempo transcurrido :", tiempo_segundos, "segundos")
 	print("Tiempo de procesador:", tiempo_ejecucion, "segundos")
 	input("presione enter para graficar la función")
+	graficar_newton(coeficientes, exponentes, x0, raiz, puntos)
 	# graficar_poly(coeficientes, exponentes, x0, xf, raiz)
 
 

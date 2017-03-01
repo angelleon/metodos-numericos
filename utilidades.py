@@ -30,7 +30,10 @@ import matplotlib.pyplot as plt
 # import numpy.polynomial.polynomial
 
 
-def graficar_poly(coeficientes, exponentes, x0, xf, raiz):
+def graficar_poly(coeficientes, exponentes, x0, xf, raiz, intervalo_original=None):
+	if intervalo_original is not None:
+		x0 = intervalo_original[0]
+		xf = intervalo_original[1]
 	if abs(x0 - raiz) < abs(raiz - xf):
 		xf = raiz + abs(x0 - raiz)
 	else:
@@ -40,9 +43,9 @@ def graficar_poly(coeficientes, exponentes, x0, xf, raiz):
 	plt.axhline(0, color='black')
 	plt.axvline(0, color='black')
 	plt.grid(True)
-	plt.plot(x_vals, y_vals)
-	print(raiz)
-	plt.plot([raiz], [0.0], 'ro')
+	plt.plot(x_vals, y_vals, linewidth=1.0)
+	plt.scatter([raiz], [0.0])
+	# plt.plot([0, 1], [0, 2], linewidth=0.7)
 	plt.show()
 	"""fig, ax = plt.subplots()
 	# ax.plot(x_vals, evaluar_poly(x_vals, coeficientes, exponentes))
@@ -59,7 +62,7 @@ def graficar_poly(coeficientes, exponentes, x0, xf, raiz):
 	plt.show()"""
 
 
-# todo declarar funcion analizar fracciones
+# todo terminar funcion analizar fracciones
 def convertir_fracciones():
 	motor = re.compile("[-+]?[0-9]|[-+]?[0-9]?\.[0-9]+")
 
@@ -132,7 +135,6 @@ def convertir_a_numero(raw_numero):
 
 
 def convertir_fraccion(fraccion):
-	print("funcion convertir fracciones")
 	motor = re.compile("[-+]?[0-9]+|[-+]?[0-9]\.[0-9]+")
 	numerador = motor.search(fraccion)
 	fraccion = fraccion[:numerador.start()] + fraccion[numerador.end():]
@@ -143,8 +145,6 @@ def convertir_fraccion(fraccion):
 
 
 def evaluar_poly(x, coeficientes, exponentes):
-	# print("funcion evaluar_poly")
-	# print(x, coeficientes, exponentes)
 	imagen = 0
 	for i in range(0, len(coeficientes)):
 		imagen += coeficientes[i] * x ** exponentes[i]
@@ -196,7 +196,6 @@ def introducir_n_confianza():
 
 
 def introducir_parametros():
-	print("funcion introducir_poly")
 	polinomio = introducir_poly()
 	intervalo = introducir_intervalo()
 	n_confianza = introducir_n_confianza()
@@ -268,38 +267,29 @@ def reducir_terminos_lineales(terminos):
 
 
 def obtener_terminos_lineales(raw_poly):
-	print("funcion obtener_terminos_lineales")
-	print(raw_poly)
-
 	motor = re.compile("([-+]?[0-9]+)|([-+]([0-9]*\.[0-9]+))")
 	terminos = []
 	termino = motor.search(raw_poly)
 	while termino is not None and len(raw_poly) != 0:
 		termino = motor.search(raw_poly)
-		print(termino.group())
 		if termino is not None:
 			terminos.append(termino.group())
 			break
 		raw_poly = raw_poly[0:termino.start()] + raw_poly[termino.end():]
-	print(terminos)
 	termino = reducir_terminos_lineales(terminos)
 	return termino
 
 
 def obtener_terminos(raw_poly):
-	print("funcion obtener_terminos")
 	buscr_carac_invalidos(raw_poly)
 	respuesta = obtener_terminos_x(raw_poly)
 	terminos = respuesta[0]
 	raw_poly = respuesta[1]
-	print(terminos, raw_poly)
 	terminos.append(obtener_terminos_lineales(raw_poly))
-	print(terminos)
 	return terminos
 
 
 def mostrar_error(error, raw_poly):
-	print("funcion mostrar error")
 	motor = re.compile(error)
 	coincidencia = motor.search(raw_poly)
 	indicador = "^~~~~~"
@@ -310,12 +300,9 @@ def mostrar_error(error, raw_poly):
 
 
 def obtener_variable(terminos):
-	print("funcion obtener_variable")
-	print(terminos)
 	motor = re.compile("[a-z]")
 	variables = set()
 	for i in terminos:
-		print(type(i))
 		coincidencia = motor.search(i)
 		if coincidencia is not None:
 			variables.add(coincidencia.group())
@@ -324,33 +311,27 @@ def obtener_variable(terminos):
 		print("Ingrese funciones de una variable")
 		raise FuncionMultivariable
 	elif len(variables) == 0:
-		print("El método de bisección no se puede aplicar a funciones constantes")
+		print("El método no se puede aplicar a funciones constantes")
 		return None
 	return variable
 
 
 def obtener_coeficientes(terminos):
-	print("funcion funcion obtener_coeficientes")
 	motor = re.compile("^([-+]?[0-9]*\.[0-9]+)|^([-+]?[0-9]+)|^([-+])")
 	coeficientes = []
 	for termino in terminos:
-		print(termino)
 		coincidencia = motor.search(termino)
 		if coincidencia is None:
 			coeficientes.append(1.0)
 			continue
 		coeficiente = coincidencia.group()
-		print(coeficiente, coincidencia.groups())
 		if coeficiente == '+' or coeficiente == '-':
 			coeficiente += '1'
 		coeficientes.append(float(coeficiente))
-	print(coeficientes)
 	return coeficientes
 
 
 def obtener_exponentes(terminos):
-	print("funcion obtener_exponentes")
-	print(terminos)
 	exponentes = []
 	for termino in terminos:
 		coincidencia = re.search("\^[0-9]+", termino)
@@ -362,13 +343,10 @@ def obtener_exponentes(terminos):
 			exponentes.append(1)
 		else:
 			exponentes.append(0)
-	print(exponentes)
 	return exponentes
 
 
 def buscar_duplicados(lista):
-	print("funcion buscar_duplicados")
-	print(lista)
 	repetidos = set()
 	indices = []
 	for i in range(0, len(lista)):
@@ -386,13 +364,10 @@ def buscar_duplicados(lista):
 			if i == lista[j]:
 				indices[cont].append(j)
 		cont += 1
-	print(indices)
 	return indices
 
 
 def reducir_terminos(coeficientes, exponentes):
-	print("funcion reducir_terminos")
-	print(coeficientes, exponentes)
 	reducibles = buscar_duplicados(exponentes)
 	if reducibles is None:
 		return None
@@ -413,13 +388,10 @@ def reducir_terminos(coeficientes, exponentes):
 		if i not in indice_descartados:
 			coef_reducidos.append(coeficientes[i])
 			exp_reducidos.append(exponentes[i])
-	print(coef_reducidos, exp_reducidos)
 	return [coef_reducidos, exp_reducidos]
 
 
 def ordenar(coeficientes, exponentes, terminos):
-	print("funcion ordenar")
-	print(coeficientes, exponentes, terminos)
 	if exponentes == sorted(exponentes, reverse=True):
 		return None
 	indices = {}
@@ -427,24 +399,16 @@ def ordenar(coeficientes, exponentes, terminos):
 	for i in exponentes:
 		indices[str(i)] = cont
 		cont += 1
-	print(exponentes)
 	exponentes.sort(reverse=True)
-	print(exponentes)
 	coef_ordenados = []
 	term_ordenados = []
-	print(exponentes)
-	print(indices.keys(), sorted(indices.keys()))
-	print(indices)
 	for clave in sorted(indices.keys()):
-		print(clave, coeficientes[indices[clave]], indices[clave])
 		coef_ordenados.append(int(coeficientes[indices[clave]]))
 		term_ordenados.append(terminos[indices[clave]])
-	print(coef_ordenados, exponentes, term_ordenados)
 	return [coef_ordenados, exponentes, term_ordenados]
 
 
 def analizar_poly(raw_poly):
-	print("funcion analizar_poly")
 	if len(raw_poly) == 0:
 		print("No hay entrada")
 		return
@@ -456,7 +420,6 @@ def analizar_poly(raw_poly):
 	elif terminos is None:
 		return None
 	variable = obtener_variable(terminos)
-	print(variable)
 	if variable is None:
 		return None
 	coeficientes = obtener_coeficientes(terminos)
@@ -478,13 +441,11 @@ def analizar_poly(raw_poly):
 
 
 def probar_intervalo(coeficientes, exponentes, x0, xf):
-	print("funcion probar_intervalo")
 	if evaluar_poly(x0, coeficientes, exponentes) * evaluar_poly(xf, coeficientes, exponentes) < 0:
 		return [x0, xf]
 	dx = abs(x0 - xf) / float(100)
 	xi = x0
 	for i in range(0, 100):
-		print(xi, dx, x0, xf)
 		if evaluar_poly(xi, coeficientes, exponentes) * evaluar_poly(xf, coeficientes, exponentes) < 0:
 			if i <= 50:
 				return [x0, xi]

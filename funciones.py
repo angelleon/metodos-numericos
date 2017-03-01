@@ -42,9 +42,10 @@ class TipoFuncion(Enum):
 
 
 class Funcion(object):
+	tipo = TipoFuncion.funcion
+
 	def __init__(self, variable='x'):
 		self.variable = variable
-		self.tipo = TipoFuncion.funcion
 		self.valor = None
 
 	def __str__(self):
@@ -73,9 +74,10 @@ class Funcion(object):
 
 
 class FuncionConstante(Funcion):
+	tipo = TipoFuncion.constante
+
 	def __init__(self, valor):
 		super().__init__('')
-		self.tipo = TipoFuncion.constante
 		try:
 			self.valor = float(valor)
 		except ValueError:
@@ -99,6 +101,8 @@ class FuncionConstante(Funcion):
 
 
 class Identidad(Funcion):
+	tipo = TipoFuncion.identidad
+
 	def __init__(self, variable='x'):
 		super().__init__()
 		self.variable = variable
@@ -114,8 +118,9 @@ class Identidad(Funcion):
 		return FuncionConstante(1)
 
 
-
 class Potencia(Funcion):
+	tipo = TipoFuncion.potencia
+
 	def __init__(self, coeficiente=FuncionConstante(1), variable=Identidad('x'), exponente=FuncionConstante(1)):
 		super().__init__()
 		self.tipo = TipoFuncion.potencia
@@ -137,8 +142,22 @@ class Polinomio(Funcion):
 
 
 class Exponencial(Funcion):
+	tipo = TipoFuncion.exponencial
+
 	def __init__(self, base=e, exponente=Identidad('x')):
 		super().__init__()
+
+
+class Logaritmica(Funcion):
+	tipo = TipoFuncion.logaritmica
+
+
+class Trigonometrica(Funcion):
+	tipo = TipoFuncion.triginometrica
+
+
+class Seno(Trigonometrica):
+	pass
 
 
 def obtener_tokens(raw_func):

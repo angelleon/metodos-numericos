@@ -111,12 +111,12 @@ def main(argv):
 		print("No se enconró una raíz en el intervalo. Intente con un intervalo diferente")
 		return
 	elif intervalo[0] != x0 or intervalo[1] != xf:
-		print("Hay dos raices en el intervalo.\nUsando subintervalo [" + intervalo[0] + ',' + intervalo[1] + ']')
+		print("Hay dos raices en el intervalo.\nUsando subintervalo [", intervalo[0], ',', intervalo[1], ']')
 		if intervalo[0] != x0:
 			x0 = intervalo[0]
 		elif intervalo[1] != xf:
 			xf = intervalo[1]
-	print("Bisectando ", polinomio, " en el intervalo [", x0, ',', xf, ']')
+	print(" ", polinomio, " en el intervalo [", x0, ',', xf, ']')
 	inicio_segundos = time.time()
 	inicio_procesador = time.clock()
 	resultados = falsa_posicion(coeficientes, exponentes, x0, xf, n_signif)

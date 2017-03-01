@@ -28,7 +28,6 @@ import time
 
 
 def bisectar(coeficientes, exponentes, x0, xf, n_signif):
-	# print("funcion bisectar")
 	tolerancia = 0.05 * 10 ** (2 - n_signif)
 	error = tolerancia * 2
 	cont = 0
@@ -51,7 +50,6 @@ def bisectar(coeficientes, exponentes, x0, xf, n_signif):
 
 
 def imprimir_ayuda():
-	# print("funcion imprimir_ayuda")
 	texto_ayuda =\
 """Uso:
 	Interactivo:
@@ -66,7 +64,6 @@ def imprimir_ayuda():
 
 
 def modo_interactivo():
-	# print("funcion modo_interactivo")
 	while True:
 		respuesta = input("""Opciones:
 	1. Modo normal""")
@@ -80,8 +77,6 @@ def modo_interactivo():
 
 
 def main(argv):
-	# print("funcion main")
-	#try:
 	if len(argv) == 1:
 		parametros = modo_interactivo()
 	elif len(argv) == 2 and (argv[1] == "-h" or argv[1] == "--help"):
