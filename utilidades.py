@@ -23,51 +23,56 @@ MA 02110-1301, USA.
 """
 
 # import sys
-import re
+import re  # modulo de expresiones regulares
 # import time
 import numpy as np
 import matplotlib.pyplot as plt
-# import numpy.polynomial.polynomial
+
+
+class Polinomio:  # no usada esta clase hasta ahora, la mayoria del programa esta hecho con el paradigma imperativo
+	def __init__(self, coef=[1, 0], exp=[1, 0]):
+		self.coef = coef
+		self.exp = exp
+
+	def evaluar(self, x):
+		imagen = 0
+		for i in range(len(self.coef)):
+			imagen += self.coef[i] * x ** self.exp[i]
+		return imagen
+
+	def derivar(self):
+		coef_deriv = []
+		exp_deriv = []
+		for i in range(len(self.coef)):
+			if self.exp[i] > 0:
+			exp_deriv.append(self.exp[i] - 1) 
+			coef_deriv.append(self.coef[i] * self.exp[i])
+		return Polinomio(coef_deriv, exp_deriv)  # Devuelve un objeto polinomio
 
 
 def graficar_poly(coeficientes, exponentes, x0, xf, raiz, intervalo_original=None):
-	if intervalo_original is not None:
+	if intervalo_original is not None:  # cuando se ha usado un subintervalo porque hay varias raices se grafica
+		# el intervalo original para mostrar las multiples intersecciones con el eje x
 		x0 = intervalo_original[0]
 		xf = intervalo_original[1]
-	if abs(x0 - raiz) < abs(raiz - xf):
+	if abs(x0 - raiz) < abs(raiz - xf): # graficar en un intervalo simetrico
 		xf = raiz + abs(x0 - raiz)
 	else:
 		x0 = raiz - abs(raiz - xf)
-	x_vals = np.linspace(x0, xf, 51)  # abs(xf - x0)/50.0)
-	y_vals = [evaluar_poly(x, coeficientes, exponentes) for x in x_vals]
-	plt.axhline(0, color='black')
+	x_vals = np.linspace(x0, xf, 51)  # valores de x a graficar
+	y_vals = [evaluar_poly(x, coeficientes, exponentes) for x in x_vals] # imagenes de los valores de x de la linea previa
+	plt.axhline(0, color='black') # ejes
 	plt.axvline(0, color='black')
 	plt.grid(True)
 	plt.plot(x_vals, y_vals, linewidth=1.0)
-	plt.scatter([raiz], [0.0])
-	# plt.plot([0, 1], [0, 2], linewidth=0.7)
-	plt.show()
-	"""fig, ax = plt.subplots()
-	# ax.plot(x_vals, evaluar_poly(x_vals, coeficientes, exponentes))
-	# ax.plot(x_vals, y_vals)
-	# ax.set_aspect('equal')
-	ax.grid(True, which='both')
-	plt.plot(x_vals, y_vals)
+	plt.scatter([raiz], [0.0])  # graficar la raiz
+	# todo establecer el ratio de la rejilla
+	plt.grid(True) # rejilla
+	plt.plot(x_vals, y_vals) # graficar polinomio
 	plt.show()
 
-	ax.axhline(y=0, color='k')
-	ax.axvline(x=0, color='k')"""
-	"""plt.plot(x_vals, y_vals, 'r')
-	plt.plot([raiz], [0], 'o')
-	plt.show()"""
 
-
-# todo terminar funcion analizar fracciones
-def convertir_fracciones():
-	motor = re.compile("[-+]?[0-9]|[-+]?[0-9]?\.[0-9]+")
-
-
-def derivar_poly(coeficientes, exponentes):
+def derivar_poly(coeficientes, exponentes):  # deriva, planeado reemplazar al usar el paradigma OO
 	deriv_coeficientes = []
 	deriv_exponentes = []
 	for i in range(len(coeficientes)):
@@ -76,37 +81,7 @@ def derivar_poly(coeficientes, exponentes):
 			deriv_exponentes.append(exponentes[i] - 1)
 	return [deriv_coeficientes, deriv_exponentes]
 
-
-class Numero(enumerate):
-	flotante = 1
-	entero = 2
-
-
-class FuncionTipo(enumerate):
-	constante = 0
-	polinomial = 1
-	trigonometrica = 2
-	exponencial = 3
-	logaritmica = 4
-
-
-class Funcion(object):
-	def __init__(self, tipo, subtipo=0):
-		self.tipo = tipo
-		self.subtipo = subtipo
-		self.terminos = []
-
-	def __str__(self):
-		return str([termino for termino in self.terminos])
-
-	def derivar(self):
-		pass
-
-
-class Polinomio(Funcion):
-	def derivar(self):
-		pass
-
+# excepciones al analizar la entrada del usuario
 class ErrorEntrada(Exception):
 	pass
 
@@ -115,7 +90,7 @@ class ErrorCoeficiente(ErrorEntrada):
 	pass
 
 
-class FuncionConstante(ErrorEntrada):
+class FuncionConstante(ErrorEntrada):  # lanzada si al reducir los terminos se obtien sólo constantes
 	def __str__(self):
 		return "función constante"
 
@@ -125,15 +100,12 @@ class CaracterInvalido(ErrorEntrada):
 		return "caracter invalido"
 
 
-class FuncionMultivariable(ErrorEntrada):
+class FuncionMultivariable(ErrorEntrada):  # lanzada cuando hay varias literales, el programa usa cualquier letra
+	# como variable
 	def __str__(self):
 		return "función multivariable"
 
-
-def convertir_a_numero(raw_numero):
-	pass
-
-
+# todo terminar para poder ingresar coeficientes como fracciones
 def convertir_fraccion(fraccion):
 	motor = re.compile("[-+]?[0-9]+|[-+]?[0-9]\.[0-9]+")
 	numerador = motor.search(fraccion)
@@ -143,22 +115,22 @@ def convertir_fraccion(fraccion):
 	denominador = float(denominador.group())
 	return numerador/denominador
 
-
-def evaluar_poly(x, coeficientes, exponentes):
+# todo implementar en OO
+def evaluar_poly(x, coeficientes, exponentes):  # obtener la imagen de f en el punto x, por reemplazar en paradigma OO
 	imagen = 0
 	for i in range(0, len(coeficientes)):
 		imagen += coeficientes[i] * x ** exponentes[i]
 	return imagen
 
 
-def introducir_poly():
+def introducir_poly():  # para modo interactivo
 	while True:
 		raw_poly = input("""Introduzca el polinomio en la forma:
 		anx^n + ... + a2x^2 + a1x + a0\npolinomio: """)
 		try:
 			return analizar_poly(raw_poly)
 		except ErrorEntrada:
-			continue
+			print("\nIntente de nuevo")
 
 
 def introducir_extremos():
@@ -173,6 +145,7 @@ def introducir_extremos():
 		try:
 			xf = float(input("Introduzca el extremo derecho del intervalo\nxf: "))
 		except ValueError:
+			print("introduzca un valor numerico")
 			continue
 		if xf == x0:
 			print("x0 y xf deben ser diferentes")
@@ -195,7 +168,7 @@ def introducir_n_confianza():
 	return n
 
 
-def introducir_parametros():
+def introducir_parametros():  #para el modo interactivo
 	polinomio = introducir_poly()
 	intervalo = introducir_intervalo()
 	n_confianza = introducir_n_confianza()
@@ -237,11 +210,13 @@ def introducir_poly_dummy():
 	pass
 
 
-def buscr_carac_invalidos(raw_poly):
+def buscr_carac_invalidos(raw_poly):  #busca errores de tipeo
 	motor = re.compile("[^a-z0-9-+^./]")
 	if motor.search(raw_poly) is not None:
 		mostrar_error(motor.search(raw_poly).group(), raw_poly)
-		raise CaracterInvalido
+		raise CaracterInvalido  # lanzar la excepcion en caso de que algo en el string no se pueda interprtetar
+	# correctamente
+
 
 
 def obtener_terminos_x(raw_poly):
@@ -251,10 +226,11 @@ def obtener_terminos_x(raw_poly):
 	while termino is not None:
 		termino = motor.search(raw_poly)
 		if termino is not None:
-			terminos.append(termino.group())
+			terminos.append(termino.group())  # guarda el termino encontrado en la lista
 		else:
 			break
-		raw_poly = raw_poly[0:termino.start()] + raw_poly[termino.end():]
+		raw_poly = raw_poly[0:termino.start()] + raw_poly[termino.end():]  # elimina la coincidencia encontrada de la
+	#  cadena para la siguiente iteracion
 	return [terminos, raw_poly]
 
 
@@ -275,7 +251,8 @@ def obtener_terminos_lineales(raw_poly):
 		if termino is not None:
 			terminos.append(termino.group())
 			break
-		raw_poly = raw_poly[0:termino.start()] + raw_poly[termino.end():]
+		raw_poly = raw_poly[0:termino.start()] + raw_poly[termino.end():]  # elimina la coincidencia de la cadena de
+	# entrada para la siguiente iteraccion
 	termino = reducir_terminos_lineales(terminos)
 	return termino
 
@@ -346,7 +323,8 @@ def obtener_exponentes(terminos):
 	return exponentes
 
 
-def buscar_duplicados(lista):
+def buscar_duplicados(lista):  # busca elementos duplicados en una lista, se usa para reducir los terminos con el
+	# mismo exponente en x
 	repetidos = set()
 	indices = []
 	for i in range(0, len(lista)):
@@ -367,7 +345,7 @@ def buscar_duplicados(lista):
 	return indices
 
 
-def reducir_terminos(coeficientes, exponentes):
+def reducir_terminos(coeficientes, exponentes):  # reduce terminos con el mismo exponente
 	reducibles = buscar_duplicados(exponentes)
 	if reducibles is None:
 		return None
@@ -391,7 +369,9 @@ def reducir_terminos(coeficientes, exponentes):
 	return [coef_reducidos, exp_reducidos]
 
 
-def ordenar(coeficientes, exponentes, terminos):
+def ordenar(coeficientes, exponentes, terminos):  # ordena linstas paralelas, los elementos de una lista se ordenan y
+	#  los correspondientes (segun su indice) de la otra lista se ordenan con el elemento correspondiente de la
+	# primera lista
 	if exponentes == sorted(exponentes, reverse=True):
 		return None
 	indices = {}
