@@ -29,34 +29,42 @@ import numpy as np
 import matplotlib.pyplot as plt
 # import numpy.polynomial.polynomial
 
+class poloinomio:
+	def __init__(self, coef=[1, 0], exp=[1, 0]):
+		self.coef = coef
+		self.exp = exp
+    
+	def evaluar(x):
+		imagen = 0
+		for i in range(len(self.coef)):
+		     imagen += self.coef[i] * x ** exp[i]
+		return imagen
+    
+	def derivar():
+		coef_deriv = []
+		exp_deriv = []
+		for i in range(len(self.coef)):
+		    if self.exp[i] > 0:
+			exp_deriv.append(self.exp[i] - 1) 
+			coef_deriv.append(self.coef[i] * self.exp[i])
+		return Polinomio(coef_deriv, exp_deriv)  # Devuelve un objeto polinomio
+
+	
 
 def graficar_poly(coeficientes, exponentes, x0, xf, raiz):
-	if abs(x0 - raiz) < abs(raiz - xf):
+	if abs(x0 - raiz) < abs(raiz - xf): # graficar en un intervalo simetrico
 		xf = raiz + abs(x0 - raiz)
 	else:
 		x0 = raiz - abs(raiz - xf)
-	x_vals = np.linspace(x0, xf, 51)  # abs(xf - x0)/50.0)
-	y_vals = [evaluar_poly(x, coeficientes, exponentes) for x in x_vals]
-	plt.axhline(0, color='black')
+	x_vals = np.linspace(x0, xf, 51)  # valores de x a graficar
+	y_vals = [evaluar_poly(x, coeficientes, exponentes) for x in x_vals] # imagenes de los valores de x de la linea previa
+	plt.axhline(0, color='black') # ejes
 	plt.axvline(0, color='black')
-	plt.grid(True)
-	plt.plot(x_vals, y_vals)
-	print(raiz)
+	# todo establecer el ratio de la rejilla
+	plt.grid(True) # rejilla
+	plt.plot(x_vals, y_vals) # graficar polinomio
 	plt.plot([raiz], [0.0], 'ro')
 	plt.show()
-	"""fig, ax = plt.subplots()
-	# ax.plot(x_vals, evaluar_poly(x_vals, coeficientes, exponentes))
-	# ax.plot(x_vals, y_vals)
-	# ax.set_aspect('equal')
-	ax.grid(True, which='both')
-	plt.plot(x_vals, y_vals)
-	plt.show()
-
-	ax.axhline(y=0, color='k')
-	ax.axvline(x=0, color='k')"""
-	"""plt.plot(x_vals, y_vals, 'r')
-	plt.plot([raiz], [0], 'o')
-	plt.show()"""
 
 
 # todo declarar funcion analizar fracciones
