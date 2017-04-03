@@ -1,5 +1,10 @@
-#!/bin/env python3
+#!/usr/bin/python3
 # -*- coding: utf8 -*-
+
+# Se recomienda no usar el modo interactivo de los programas porque no
+# ha sido probado completamente, en lugar de eso se recomienda usar el modo
+# no interactivo desde consola
+# probado en Python 3.6 (3.6.0 [GCC 6.3.1 20170109]) sobre Linux 4.4
 
 """
 falsa-posicion.py
@@ -23,17 +28,20 @@ MA 02110-1301, USA.
 """
 
 import sys
-from utilidades import *
+from polinomios import *
 import time
+
 
 def imprimir_ayuda():
 	mensaje = """Uso:
-    Modo no interactivo:
-        falsa-posicion.py POLINOMIO X0 XF CIFRAS_SIGNIFICATIVAS
+	Modo no interactivo:
+		falsa-posicion.py POLINOMIO X0 XF CIFRAS_SIGNIFICATIVAS
 """
+	print(mensaje)
+
 
 def modo_interactivo():
-	pass
+	print("Metodo falsa posición")
 
 
 def falsa_posicion(coeficientes, exponentes, x0, xf, n_signif):
@@ -60,6 +68,8 @@ def falsa_posicion(coeficientes, exponentes, x0, xf, n_signif):
 		xm_anterior = xm
 		# xm = (x0 + xf) / 2.0
 		cont += 1
+		if cont == 1001:
+			raise MaxIteraciones
 	return [xm, cont, error]
 
 
@@ -68,6 +78,7 @@ def main(argv):
 		parametros = modo_interactivo()
 	elif len(argv) == 2 and (argv[1] == "-h" or argv[1] == "--help"):
 		imprimir_ayuda()
+		return
 	elif len(argv) != 5:
 		print("El programa recible 4 argumentos, %d dados" % (len(argv) - 1))
 		imprimir_ayuda()
@@ -107,24 +118,37 @@ def main(argv):
 		print("x0 y xf no pueden ser iguales")
 		return
 	intervalo = probar_intervalo(coeficientes, exponentes, x0, xf)
+	#
+	# print("intervalo", x0, xf, intervalo)
 	if not intervalo:
 		print("No se enconró una raíz en el intervalo. Intente con un intervalo diferente")
 		return
 	elif intervalo[0] != x0 or intervalo[1] != xf:
 		print("Hay dos raices en el intervalo.\nUsando subintervalo [", intervalo[0], ',', intervalo[1], ']')
+		intervalo_original = [x0, xf]
 		if intervalo[0] != x0:
+			intervalo_original[0] = x0
 			x0 = intervalo[0]
 		elif intervalo[1] != xf:
+			intervalo_original[1] = xf
 			xf = intervalo[1]
+	else:
+		intervalo_original = [x0, xf]
 	print(" ", polinomio, " en el intervalo [", x0, ',', xf, ']')
-	inicio_segundos = time.time()
-	inicio_procesador = time.clock()
-	resultados = falsa_posicion(coeficientes, exponentes, x0, xf, n_signif)
-	tiempo_ejecucion = time.clock() - inicio_procesador
-	tiempo_segundos = time.time() - inicio_segundos
+	try:
+		inicio_segundos = time.time()
+		inicio_procesador = time.clock()
+		resultados = falsa_posicion(coeficientes, exponentes, x0, xf, n_signif)
+		tiempo_ejecucion = time.clock() - inicio_procesador
+		tiempo_segundos = time.time() - inicio_segundos
+	except MaxIteraciones as ex:
+		print(ex)
+		return
 	raiz = resultados[0]
 	iteraciones = resultados[1]
 	error = resultados[2]
+	if intervalo_original[0] == x0 and intervalo_original[1] == xf:
+		intervalo_original = None
 	print("Resultados:")
 	print("Raiz encontrada en", variable, "=", raiz)
 	print("Iteraciones: ", iteraciones)
@@ -132,7 +156,7 @@ def main(argv):
 	print("Tiempo transcurrido :", tiempo_segundos, "segundos")
 	print("Tiempo de procesador:", tiempo_ejecucion, "segundos")
 	input("presione enter para graficar la función")
-	graficar_poly(coeficientes, exponentes, x0, xf, raiz)
+	graficar_poly(coeficientes, exponentes, x0, xf, raiz, intervalo_original)
 
 
 if __name__ == '__main__':

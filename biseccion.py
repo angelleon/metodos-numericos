@@ -1,5 +1,10 @@
-#!/bin/env python3
+#!/usr/bin/python3
 # -*- coding: utf8 -*-
+
+# Se recomienda no usar el modo interactivo de los programas porque no
+# ha sido probado completamente, en lugar de eso se recomienda usar el modo
+# no interactivo desde consola
+# probado en Python 3.6 (3.6.0 [GCC 6.3.1 20170109]) sobre Linux 4.4
 
 """
 biseccion.py
@@ -22,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301, USA.
 """
 
-from utilidades import *
+from polinomios import *
 import sys
 import time
 
@@ -32,12 +37,13 @@ def bisectar(coeficientes, exponentes, x0, xf, n_signif):
 	error = tolerancia * 2  # asegurar que la condicion del ciclo se cumple
 	cont = 0
 	xm = (x0 + xf) / float(2)
-	# ToDo: si la raiz se encuentra en la primera iteración se obtine un valor del error incorrecto
 	xm_anterior = xm * 2  # se obtiene el primer valor del error = 1
 	while abs(error) > tolerancia:
 		if xm == 0:
 			xm += abs(x0 - xf) / 100.0
 		if evaluar_poly(xm, coeficientes, exponentes) == 0:
+			if cont == 0:  # si el punto xm es una raiz el error será 0
+				error = 0
 			break
 		elif evaluar_poly(x0, coeficientes, exponentes) * evaluar_poly(xm, coeficientes, exponentes) < 0:
 			xf = xm
@@ -47,6 +53,8 @@ def bisectar(coeficientes, exponentes, x0, xf, n_signif):
 		xm_anterior = xm
 		xm = (x0 + xf) / 2.0
 		cont += 1
+		if cont == 1001:
+			raise MaxIteraciones
 	return [xm, cont, error]
 
 
@@ -69,6 +77,7 @@ def main(argv):
 		parametros = introducir_parametros()
 	elif len(argv) == 2 and (argv[1] == "-h" or argv[1] == "--help"):
 		imprimir_ayuda()
+		return
 	elif len(argv) != 5:
 		print("El programa recible 4 argumentos, %d dados" % (len(argv) - 1))
 		imprimir_ayuda()
@@ -113,17 +122,21 @@ def main(argv):
 		print("No se enconró una raíz en el intervalo. Intente con un intervalo diferente")
 		return
 	elif intervalo[0] != x0 or intervalo[1] != xf:
-		print("Hay dos raices en el intervalo.\nUsando subintervalo [" + intervalo[0] + ',' + intervalo[1] + ']')
+		print("Hay dos raices en el intervalo.\nUsando subintervalo [", intervalo[0], ',', intervalo[1], ']')
 		if intervalo[0] != x0:
 			x0 = intervalo[0]
 		elif intervalo[1] != xf:
 			xf = intervalo[1]
 	print("Bisectando ", polin, " en el intervalo [", x0, ',', xf, ']')
-	inicio_segundos = time.time()
-	inicio_procesador = time.clock()
-	(raiz, iteraciones, error) = bisectar(coefi, expon, x0, xf, n_signif)
-	tiempo_ejecucion = time.clock() - inicio_procesador
-	tiempo_segundos = time.time() - inicio_segundos
+	try:
+		inicio_segundos = time.time()
+		inicio_procesador = time.clock()
+		(raiz, iteraciones, error) = bisectar(coefi, expon, x0, xf, n_signif)
+		tiempo_ejecucion = time.clock() - inicio_procesador
+		tiempo_segundos = time.time() - inicio_segundos
+	except MaxIteraciones as ex:
+		print(ex)
+		return
 	print("Resultados:")
 	print("Raiz encontrada en", variable, "=", raiz)
 	print("Iteraciones: ", iteraciones)

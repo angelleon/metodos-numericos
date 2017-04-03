@@ -1,5 +1,7 @@
-#!/bin/env python3
+#!/usr/bin/python3
 # -*- coding: utf8 -*-
+
+# modulo aún no implementado en los programas
 
 """
 funciones.py
@@ -97,7 +99,7 @@ class FuncionConstante(Funcion):
 		return FuncionConstante(0)
 
 	def integrar(self):
-		return Potencia(1, 1)
+		return Potencia(FuncionConstante(1), Identidad('x'))
 
 
 class Identidad(Funcion):

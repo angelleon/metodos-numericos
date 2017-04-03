@@ -1,8 +1,16 @@
-#!/bin/env python3
+#!/usr/bin/python3
 # -*- coding: utf8 -*-
 
+# funciones comunes para los programas de metodos numericos
+# este script no hace nada por si solo
+
+# Se recomienda no usar el modo interactivo de los programas porque no
+# ha sido probado completamente, en lugar de eso se recomienda usar el modo
+# no interactivo desde consola
+# probado en Python 3.6 (3.6.0 [GCC 6.3.1 20170109]) sobre Linux 4.4
+
 """
-utilidades.py
+polinomios.py
 
 Copyright 2017 Angel Leon <luianglenlop@gmail.com>
 
@@ -24,8 +32,6 @@ MA 02110-1301, USA.
 
 
 import re  # modulo de expresiones regulares
-import numpy as np
-import matplotlib.pyplot as plt
 
 """
 funciones comunes para los programas de metodos numericos
@@ -39,7 +45,7 @@ funciones comunes para los programas de metodos numericos
 # ToDo: mover analizador lexico a otro archivo
 
 
-class Polinomio:  # no usada esta clase hasta ahora, la mayoria del programa esta hecho con el paradigma imperativo
+class Polinomio:  # no usada esta clase hasta ahora, el programa usa el paradigma imperativo
 	def __init__(self, coef=None, exp=None):
 		if coef is not None:
 			self.coef = coef
@@ -63,37 +69,41 @@ class Polinomio:  # no usada esta clase hasta ahora, la mayoria del programa est
 				coef_deriv.append(self.coef[i] * self.exp[i])
 		return Polinomio(coef_deriv, exp_deriv)  # Devuelve la derivada del polinomio como objeto
 
-
-def graficar_poly(coeficientes, exponentes, x0, xf, raiz, intervalo_original=None):
-	if intervalo_original is not None:  # cuando se ha usado un subintervalo porque hay varias raices se grafica
-		# el intervalo original para mostrar las multiples intersecciones con el eje x
-		x0 = intervalo_original[0]
-		xf = intervalo_original[1]
-	if abs(x0 - raiz) < abs(raiz - xf): # graficar en un intervalo simetrico
-		xf = raiz + abs(x0 - raiz)
-	else:
-		x0 = raiz - abs(raiz - xf)
-	x_vals = np.linspace(x0, xf, 51)  # valores de x a graficar, 51 puntos equidistantes en el intervalo
-	y_vals = [evaluar_poly(x, coeficientes, exponentes) for x in x_vals] # imagenes de los valores de x de la linea previa
-	plt.axhline(0, color='black')  # ejes, por defecto no parecen
-	plt.axvline(0, color='black')
-	plt.grid(True)
-	plt.plot(x_vals, y_vals, linewidth=1.0)
-	plt.scatter([raiz], [0.0])  # graficar la raiz
-	# ToDo: establecer el ratio de la rejilla
-	plt.grid(True) # rejilla
-	plt.plot(x_vals, y_vals) # graficar polinomio
-	plt.show()
+try:
+	import numpy as np
+	import matplotlib.pyplot as plt
 
 
-def derivar_poly(coeficientes, exponentes):  # deriva, planeado reemplazar al usar el paradigma OO
-	deriv_coeficientes = []
-	deriv_exponentes = []
-	for i in range(len(coeficientes)):
-		if exponentes[i] != 0:
-			deriv_coeficientes.append(coeficientes[i] * exponentes[i])
-			deriv_exponentes.append(exponentes[i] - 1)
-	return [deriv_coeficientes, deriv_exponentes]
+	def graficar_poly(coeficientes, exponentes, x0, xf, raiz, intervalo_original=None):
+		if intervalo_original is not None:  # cuando se ha usado un subintervalo porque hay varias raices se grafica
+			# el intervalo original para mostrar las multiples intersecciones con el eje x
+			x0 = intervalo_original[0]
+			xf = intervalo_original[1]
+		if abs(x0 - raiz) < abs(raiz - xf): # graficar en un intervalo simetrico
+			xf = raiz + abs(x0 - raiz)
+		else:
+			x0 = raiz - abs(raiz - xf)
+		x_vals = np.linspace(x0, xf, 51)  # valores de x a graficar, 51 puntos equidistantes en el intervalo
+		y_vals = [evaluar_poly(x, coeficientes, exponentes) for x in x_vals] # imagenes de los valores de x de la linea previa
+		plt.axhline(0, color='black')  # ejes, por defecto no aparecen
+		plt.axvline(0, color='black')
+		plt.grid(True)
+		plt.plot(x_vals, y_vals, linewidth=1.0)
+		plt.scatter([raiz], [0.0])  # graficar la raiz
+		plt.grid(True)  # rejilla
+		plt.plot(x_vals, y_vals) # graficar polinomio
+		plt.gca().set_aspect('equal', 'datalim')
+		plt.show()
+except ImportError:
+	np = None
+	plt = None
+
+	def graficar_poli(coeficientes, exponentes, x0, xf, raiz, intervalo_original=None):
+		print("Los modulos necesarios para graficar no se han encontrado.\nInstale NumPy y Matplotlib e intentelo de "
+		      "nuevo")
+
+
+max_iteraciones = 1000
 
 
 # excepciones al analizar la entrada del usuario
@@ -121,6 +131,20 @@ class FuncionMultivariable(ErrorEntrada):  # lanzada cuando hay varias literales
 	# como variable
 	def __str__(self):
 		return "función multivariable"
+
+class MaxIteraciones(Exception):
+	def __str__(self):
+		return "Se alcanzo el maximo de iteraciones"
+
+
+def derivar_poly(coeficientes, exponentes):  # deriva, planeado reemplazar al usar el paradigma OO
+	deriv_coeficientes = []
+	deriv_exponentes = []
+	for i in range(len(coeficientes)):
+		if exponentes[i] != 0:
+			deriv_coeficientes.append(coeficientes[i] * exponentes[i])
+			deriv_exponentes.append(exponentes[i] - 1)
+	return [deriv_coeficientes, deriv_exponentes]
 
 
 # ToDo: terminar para poder ingresar coeficientes como fracciones
@@ -150,7 +174,6 @@ def introducir_poly():  # para modo interactivo
 			return analizar_poly(raw_poly)
 		except ErrorEntrada:
 			print("\nIntente de nuevo")
-
 
 
 def introducir_n_confianza():
@@ -328,7 +351,7 @@ def buscar_duplicados(lista):  # busca elementos duplicados en una lista, se usa
 	# mismo exponente en x
 	repetidos = set()
 	indices = []
-	for i in range(0, len(lista)):
+	for i in range(len(lista)):
 		if i < len(lista) - 1:
 			for j in range(i+1, len(lista)):
 				if lista[j] == lista[i]:
@@ -359,8 +382,7 @@ def reducir_terminos(coeficientes, exponentes):  # reduce terminos con el mismo 
 	for i in reducibles:
 		for j in i:
 			if j != i[0]:
-				for k in indice_reducidos:
-					coeficientes[k] += coeficientes[j]
+				coeficientes[i[0]] += coeficientes[j]
 	coef_reducidos = []
 	exp_reducidos = []
 	for i in range(0, len(coeficientes)):
@@ -418,7 +440,6 @@ def analizar_poly(raw_poly):
 	polinomio = ''
 	for i in terminos:
 		polinomio += str(i)
-	print("polinomio: ", polinomio)
 	return [coeficientes, exponentes, polinomio, variable]
 
 
