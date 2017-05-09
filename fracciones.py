@@ -115,6 +115,8 @@ class Fraccion:
 	def __mul__(self, other):
 		if isinstance(other, int):
 			other = Fraccion(other)
+		elif isinstance(other, float):
+			other = Fraccion(other)
 		return Fraccion(self.numerador * other.numerador, self.denominador * other.denominador)
 
 	def __lt__(self, other):
@@ -125,6 +127,9 @@ class Fraccion:
 			return True
 		else:
 			return False
+
+	def __iadd__(self, other):
+		return self.__add__(other)
 
 	def __gt__(self, other):
 		if isinstance(other, int):

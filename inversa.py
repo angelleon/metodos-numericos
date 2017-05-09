@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-
+# -*- coding: utf8 -*-
 """
-reduccion_gaussiana.py
+
 
 Copyright 2017 Angel Leon <luianglenlop@gmail.com>
 
@@ -20,35 +20,35 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301, USA.
 """
-import sys
-from matriz import *
-from lector_matrices import *
 
-def imprimir_ayuda():
-	texto_ayuda =\
-"""Uso:
-	Este programa es interactivo. Simplemente ejecute
-		
-		./reduccion_gaussiana.py
-		
-		o
-		
-		python3 reduccion_gaussiana.py
-"""
+from lector_matrices import *
+from matriz import *
+import sys
 
 
 def main(argv):
-	raw_matrix = ingresar()
-	matriz = convertir(raw_matrix)
-	for i in matriz:
-		for j in i:
-			print(j, end=' ')
-		print("")
-	matriz = Matriz(matriz)
-	matriz.reduccion_gaussiana(True)
-	print("")
-	print(matriz)
+	while True:
+		raw_matrix = ingresar()
+		matriz = convertir(raw_matrix)
+		matriz = Matriz(matriz)
+		if not matriz.cuadrada:
+			while True:
+				print(
+					"Ha proporcionado una matriz rectangular\nPara obtener una inversa es necesario que ingrese una "
+					"matriz cuadrada")
+				opc = input("1.- Reintentar\n2.- Salir")
+				if opc == '1':
+					break
+				if opc == '2':
+					return
+		else:
+			break
+	inver = matriz.inversa(True)
+	print("\nSe encrontro la matriz inversa A^-1 = ")
+	print(inver)
 
 
 if __name__ == '__main__':
 	main(sys.argv)
+
+

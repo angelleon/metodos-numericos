@@ -30,7 +30,7 @@ def main(argv):
 	raw_matrix = ingresar()
 	matriz = convertir(raw_matrix)
 	matriz = Matriz(matriz)
-	matriz.gauss_jordan()
+	matriz.gauss_jordan(True)
 	print("")
 	print(matriz)
 

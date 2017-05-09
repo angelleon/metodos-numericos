@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-
+# -*- coding: utf8 -*-
 """
-reduccion_gaussiana.py
+sumas_riemman.py 
 
 Copyright 2017 Angel Leon <luianglenlop@gmail.com>
 
@@ -20,35 +20,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301, USA.
 """
-import sys
-from matriz import *
-from lector_matrices import *
 
-def imprimir_ayuda():
-	texto_ayuda =\
-"""Uso:
-	Este programa es interactivo. Simplemente ejecute
-		
-		./reduccion_gaussiana.py
-		
-		o
-		
-		python3 reduccion_gaussiana.py
-"""
+import os
+from lector_polinomios import *
+
+def sumas_riemman(poly, a, b, error, tolerancia):
+	#acum = 0
+	n = 10
+	delt_x = abs(b - a) / n
+	while error > tolerancia:
+		acum = 0
+		for i in range(n):
+			for j in poly:
+				acum += j.evaluar(a + delt_x * i)
 
 
-def main(argv):
-	raw_matrix = ingresar()
-	matriz = convertir(raw_matrix)
-	for i in matriz:
-		for j in i:
-			print(j, end=' ')
-		print("")
-	matriz = Matriz(matriz)
-	matriz.reduccion_gaussiana(True)
-	print("")
-	print(matriz)
+
+def main():
+	poly = leer_poly()
+	cifras_sig = leer_cif_sig()
+	interv = leer_interv()
+	integ_real = poly.integrar(interv[0], interv[1])
+	sumas_riemman(poly)
 
 
-if __name__ == '__main__':
-	main(sys.argv)
+
