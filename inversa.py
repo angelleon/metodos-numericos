@@ -21,9 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301, USA.
 """
 
-from lector_matrices import *
-from matriz import *
 import sys
+
+from lector_matrices import *
+
+from utilidades.matriz import *
 
 
 def main(argv):

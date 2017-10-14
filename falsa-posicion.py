@@ -28,136 +28,107 @@ MA 02110-1301, USA.
 """
 
 import sys
-from polinomios import *
+"""from polinomios import *
 import time
+from utilidades.funciones import PolMaclaurin"""
+
+from utilidades.lectores import leer_csignif, leer_poly, leer_intervalo
+from utilidades.polinomios import evaluar_poly, derivar_poly
+from math import sin, cos, pi
+from utilidades.util import factorial, calc_toler
+from utilidades.Errores import MaxIteraciones
 
 
 def imprimir_ayuda():
-	mensaje = """Uso:
-	Modo no interactivo:
-		falsa-posicion.py POLINOMIO X0 XF CIFRAS_SIGNIFICATIVAS
+    mensaje = """Uso:
+    Modo no interactivo:
+        falsa-posicion.py POLINOMIO X0 XF CIFRAS_SIGNIFICATIVAS
 """
-	print(mensaje)
+    print(mensaje)
 
 
 def modo_interactivo():
-	print("Metodo falsa posición")
+    print("Metodo falsa posición")
 
 
-def falsa_posicion(coeficientes, exponentes, x0, xf, n_signif):
-	print("funcion falsa-posicion")
-	tolerancia = 0.05 * 10 ** (2 - n_signif)
-	error = tolerancia * 2
-	cont = 0
-	while abs(error) > tolerancia:
-		fx0 = evaluar_poly(x0, coeficientes, exponentes)
-		fxf = evaluar_poly(xf, coeficientes, exponentes)
-		xm = (xf * fx0 - x0 * fxf) / (fx0 - fxf)
-		fxm = evaluar_poly(xm, coeficientes, exponentes)
-		if cont == 0:
-			xm_anterior = xm * 2
-		if xm == 0:
-			xm += abs(x0 - xf) / 100.0
-		if fxm == 0:
-			break
-		elif fx0 * fxm < 0:
-			xf = xm
-		elif fxm * fxf < 0:
-			x0 = xm
-		error = (xm - xm_anterior) * 100.0 / xm
-		xm_anterior = xm
-		# xm = (x0 + xf) / 2.0
-		cont += 1
-		if cont == 1001:
-			raise MaxIteraciones
-	return [xm, cont, error]
+def falsa_posicion(coef, exp, x0, xf, n_signif):
+    tolerancia = 0.05 * 10 ** (2 - n_signif)
+    error = tolerancia * 2
+    xm_anterior = None
+    cont = 0
+    xm = None
+    while abs(error) > tolerancia:
+        fx0 = evaluar_poly(coef, exp, x0)
+        fxf = evaluar_poly(coef, exp, xf)
+        xm = (xf * fx0 - x0 * fxf) / (fx0 - fxf)
+        fxm = evaluar_poly(coef, exp, xm)
+        if cont == 0:
+            xm_anterior = xm * 2
+        if xm == 0:
+            xm += abs(x0 - xf) / 100.0
+        if fxm == 0:
+            break
+        elif fx0 * fxm < 0:
+            xf = xm
+        elif fxm * fxf < 0:
+            x0 = xm
+        error = (xm - xm_anterior) * 100.0 / xm
+        xm_anterior = xm
+        # xm = (x0 + xf) / 2.0
+        cont += 1
+        if cont == 1001:
+            raise MaxIteraciones
+    return xm
 
 
 def main(argv):
-	if len(argv) == 1:
-		parametros = modo_interactivo()
-	elif len(argv) == 2 and (argv[1] == "-h" or argv[1] == "--help"):
-		imprimir_ayuda()
-		return
-	elif len(argv) != 5:
-		print("El programa recible 4 argumentos, %d dados" % (len(argv) - 1))
-		imprimir_ayuda()
-		return
-	elif len(argv) == 5:
-		try:
-			parametros = analizar_poly(argv[1])
-		except (ErrorEntrada, ErrorCoeficiente, FuncionMultivariable, FuncionConstante, CaracterInvalido) as ex:
-			print("Se encontró el error: ", ex)
-			return
-		if parametros is not None:
-			try:
-				parametros.append(float(argv[2]))
-			except ValueError:
-				print("X0 debe ser un número")
-				return
-			try:
-				parametros.append(float(argv[3]))
-			except ValueError:
-				print("Xf debe ser un número")
-				return
-			try:
-				parametros.append(int(argv[4]))
-			except ValueError:
-				print("CIFRAS_SIGNIFICATIVAS debe ser un número")
-				return
-	coeficientes = parametros[0]
-	exponentes = parametros[1]
-	polinomio = parametros[2]
-	variable = parametros[3]
-	x0 = parametros[4]
-	xf = parametros[5]
-	n_signif = parametros[6]
-	if analizar_intervalo(x0, xf):
-		(x0, xf) = analizar_intervalo(x0, xf)
-	else:
-		print("x0 y xf no pueden ser iguales")
-		return
-	intervalo = probar_intervalo(coeficientes, exponentes, x0, xf)
-	#
-	# print("intervalo", x0, xf, intervalo)
-	if not intervalo:
-		print("No se enconró una raíz en el intervalo. Intente con un intervalo diferente")
-		return
-	elif intervalo[0] != x0 or intervalo[1] != xf:
-		print("Hay dos raices en el intervalo.\nUsando subintervalo [", intervalo[0], ',', intervalo[1], ']')
-		intervalo_original = [x0, xf]
-		if intervalo[0] != x0:
-			intervalo_original[0] = x0
-			x0 = intervalo[0]
-		elif intervalo[1] != xf:
-			intervalo_original[1] = xf
-			xf = intervalo[1]
-	else:
-		intervalo_original = [x0, xf]
-	print(" ", polinomio, " en el intervalo [", x0, ',', xf, ']')
-	try:
-		inicio_segundos = time.time()
-		inicio_procesador = time.clock()
-		resultados = falsa_posicion(coeficientes, exponentes, x0, xf, n_signif)
-		tiempo_ejecucion = time.clock() - inicio_procesador
-		tiempo_segundos = time.time() - inicio_segundos
-	except MaxIteraciones as ex:
-		print(ex)
-		return
-	raiz = resultados[0]
-	iteraciones = resultados[1]
-	error = resultados[2]
-	if intervalo_original[0] == x0 and intervalo_original[1] == xf:
-		intervalo_original = None
-	print("Resultados:")
-	print("Raiz encontrada en", variable, "=", raiz)
-	print("Iteraciones: ", iteraciones)
-	print("Error: ", error)
-	print("Tiempo transcurrido :", tiempo_segundos, "segundos")
-	print("Tiempo de procesador:", tiempo_ejecucion, "segundos")
-	input("presione enter para graficar la función")
-	graficar_poly(coeficientes, exponentes, x0, xf, raiz, intervalo_original)
+    # coef, exp = leer_poly()
+    # coef_deriv, exp_deriv = derivar_poly(coef, exp)
+    c_signif = leer_csignif()
+    x0 = 0.1
+    xf = 4
+    coef = []
+    exp = []
+    k = 0
+    i = 1
+    toler = calc_toler(c_signif)
+    error = toler * 2
+    raiz = None
+    while error > toler:
+        if k % 2 == 0:
+            """terminos del polinomio de Maclaurin con k par tienen coeficiente cero por
+            deriv_k_esima(sen) = +sen ó -sen"""
+
+
+            k += 1
+            continue
+        coef.append(((-1) ** i) / factorial(k))
+        exp.append(k)
+        try:
+            raiz = falsa_posicion(coef, exp, x0, xf, c_signif)
+        except Exception as ex:
+            print(ex)
+            raise
+        if raiz is not None:
+            error = ((pi - raiz) / pi) * 100
+        if k > 10000:
+            raise MaxIteraciones
+        k += 1
+        i += 1
+    print("Se encontró\n pi = ", raiz)
+    print("Con el polinomio de Maclaurin de {} terminos".format(k))
+    print("De los cuales {} son No nulos".format(i-1))
+    print("")
+    coef.reverse()
+    exp.reverse()
+    for i in range(len(coef)):
+        print("{}x^{}".format(coef[i], exp[i]), end="  ")
+    print("")
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    try:
+        while True:
+            main(sys.argv)
+    except KeyboardInterrupt:
+        print("Saliendo")

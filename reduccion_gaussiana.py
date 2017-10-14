@@ -21,34 +21,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301, USA.
 """
 import sys
-from matriz import *
-from lector_matrices import *
+
+from utilidades.lector_matrices import *
+from utilidades.matriz import *
+
 
 def imprimir_ayuda():
-	texto_ayuda =\
+    texto_ayuda =\
 """Uso:
-	Este programa es interactivo. Simplemente ejecute
-		
-		./reduccion_gaussiana.py
-		
-		o
-		
-		python3 reduccion_gaussiana.py
+    Este programa es interactivo. Simplemente ejecute
+        
+        ./reduccion_gaussiana.py
+        
+        o
+        
+        python3 reduccion_gaussiana.py
 """
 
 
 def main(argv):
-	raw_matrix = ingresar()
-	matriz = convertir(raw_matrix)
-	for i in matriz:
-		for j in i:
-			print(j, end=' ')
-		print("")
-	matriz = Matriz(matriz)
-	matriz.reduccion_gaussiana(True)
-	print("")
-	print(matriz)
+    raw_matrix = ingresar()
+    matriz = convertir(raw_matrix)
+    for i in matriz:
+        for j in i:
+            print(j, end=' ')
+        print("")
+    matriz = Matriz(matriz)
+    matriz.reduccion_gaussiana(True)
+    print("")
+    print(matriz)
 
 
 if __name__ == '__main__':
-	main(sys.argv)
+    main(sys.argv)

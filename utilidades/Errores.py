@@ -1,0 +1,2 @@
+class MaxIteraciones(Exception):
+    pass
