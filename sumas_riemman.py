@@ -21,27 +21,75 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301, USA.
 """
 
-import os
-from lector_polinomios import *
-
-def sumas_riemman(poly, a, b, error, tolerancia):
-	#acum = 0
-	n = 10
-	delt_x = abs(b - a) / n
-	while error > tolerancia:
-		acum = 0
-		for i in range(n):
-			for j in poly:
-				acum += j.evaluar(a + delt_x * i)
+import sys
+from utilidades.lectores import leer_intervalo, leer_csignif
+from utilidades.util import calc_toler
+from utilidades.funciones import *
+from utilidades.lector_polinomios import Lector_polinomios
 
 
+def print_lib_missing():
+    print(
+    """
+    ===========================================================================================
+    ¡¡¡ Su sistema no cuenta con las bibliotecas necesarias para graficar. !!!
+    
+    Para acceder a las funciones de graficación por favor instale:
+    
+    python3-mathplotlib >= 1.5.1
+    
+    e intentelo de nuevo.
+    ===========================================================================================""")
 
-def main():
-	poly = leer_poly()
-	cifras_sig = leer_cif_sig()
-	interv = leer_interv()
-	integ_real = poly.integrar(interv[0], interv[1])
-	sumas_riemman(poly)
+
+try:
+    from matplotlib import pyplot
+except ImportError:
+    print_lib_missing()
+    pyplot = None
+
+
+def graficar(f=Funcion, n=2, a=0, b=1):
+    if pyplot is None:
+        print_lib_missing()
+        exit(0)
+    else:
+        print("atender ToDo")
+
+
+def riemman(f=Funcion(), n=2, a=0, b=1):
+    delta_x = (b - a) / n
+    area = 0
+    for i in range(n):
+        area += f.evaluar(a + delta_x * i)
+    return area * delta_x
+
+
+def integrar(f=Funcion(), a=0, b=1, toler=0.5):
+    error = toler * 2
+    n = 1
+    area_calc = 0
+    F = f.integrar()
+    area_real = F.evaluar(b) - F.evaluar(a)
+    while error > toler:
+        area_calc = riemman(f, n, a, b)
+        error = 100 * (area_real - area_calc) / area_real
+        n += 1
+    return area_calc, n
+
+
+def main(argv):
+    c_signif = leer_csignif()
+    toler = calc_toler(c_signif)
+    a, b = leer_intervalo()
+    lect_func = LectorFunciones()
+    f = lect_func.leer_funcion()
+    area, n = integrar(f, a, b, toler)
+    graficar(f, n, a, b)
+
+
+if __name__ == '__main__':
+    main(sys.argv)
 
 
 

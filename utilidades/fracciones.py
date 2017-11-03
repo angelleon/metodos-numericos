@@ -56,6 +56,8 @@ def mcd(a, b):  # algoritmo de Euclides para encontrar el mcd
 
 class Fraccion:
     def __init__(self, numerador, denominador=1):
+        if denominador == 0:
+            raise ZeroDivisionError
         if isinstance(numerador, float):
             numerador, potencia = self.a_entero(numerador)
             denominador *= 10 ** potencia

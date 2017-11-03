@@ -156,7 +156,7 @@ class Renglon:
 
 
 class Matriz:
-    def __init__(self, renglones=()):
+    def __init__(self, renglones=(), renglones_indep=()):
         self.m = len(renglones)
         if self.m != 0:
             maxi = len(renglones[0])
@@ -195,7 +195,15 @@ class Matriz:
         self.diag_dom = False
         self.triangular = False
         self.det = None
-        self.acum = None  # acumulador por el que se multiplica el determinante de la matriz triangular obtenida al llamar al método reduccion_gaussiana()
+        self.acum = None  # acumulador por el que se multiplica el determinante de
+        # la matriz triangular obtenida al llamar al método reduccion_gaussiana()
+        self.reng_aum = []
+        if len(renglones_indep) != 0:
+            self.aumentada = True
+            for i in renglones_indep:
+                self.reng_aum.append(i)
+        else:
+            self.aumentada = False
 
     def __str__(self):
         cadena = ''
@@ -249,6 +257,20 @@ class Matriz:
                 for j in range(self.n):
                     elementos.append(self.renglones[i][j] * other)
                 reng.append(Renglon(elementos))
+            return Matriz(reng)
+
+    def __sub__(self, other):
+        if not isinstance(other, Matriz):
+            raise OperacionNoDefinida
+        else:
+            if self.m != other.m or self.n != other.n:
+                raise ValueError
+            reng = []
+            for i in range(self.m):
+                r = []
+                for j in range(self.n):
+                    r.append(self.renglones[i][j] - other[i][j])
+                reng.append(Renglon(r))
             return Matriz(reng)
 
     def diag_domin(self):
@@ -344,6 +366,8 @@ class Matriz:
                         # opera sobre la matriz identidad asociada para obtener la inversa (de existir)
                     # de esta forma no se puede calcular el determinante (modificando la matriz)
                     # sin que se "pierdan" las operaciones elementales hechas en la reducción gaussiana
+                    if self.aumentada:
+                        self.reng_aum[j] += self.reng_aum[i] * alfa
                 else:
                     break
 
@@ -367,9 +391,9 @@ class Matriz:
                     self.acum = (1 / alfa) * self.acum
                     if self.cuadrada:
                         self.reng_ident[j] += self.reng_ident[i] * alfa
-                        # print(self.__repr__(), alfa, self.cuadrada)
+                    if self.aumentada:
+                        self.reng_aum[j] += self.reng_aum[i] * alfa
         for i in range(self.m):
-            # print(self.renglones[i])
             self.__contar_ceros()
             if self.renglones[i].ceros_d != self.n:
                 alfa = 1 / self.renglones[i].pivote_d
@@ -378,6 +402,8 @@ class Matriz:
                     self.reng_ident[i] *= alfa
                 # print(self.renglones[i], self.renglones[i].pivote_d)
                 # print("pivote derecho", self.renglones[i].pivote_d)
+                if self.aumentada:
+                    self.reng_aum[i] *= alfa
             else:
                 break
 
@@ -387,8 +413,8 @@ class Matriz:
             return
         else:
             self.reduccion_gaussiana()
-            self.det = 1
             if self.det is None:
+                self.det = 1
                 for i in range(self.m):
                     self.det *= self.renglones[i][i]
                 self.det *= self.acum

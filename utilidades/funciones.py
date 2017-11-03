@@ -11,45 +11,81 @@ class Funcion:
         pass
 
     def evaluar(self, a):
-        pass
+        return 0
 
-    @staticmethod
     def derivar(self):
         return Funcion()
 
-    def integrar(self, a, b):
-        pass
+    def integrar(self):
+        return Funcion()
 
 
 class Constante(Funcion):
-    def __init__(self, y=0):
+    def __init__(self, y=0.0):
         super().__init__()
         self.y = y
 
     def __eq__(self, other):
-        if isinstance(other, float) or isinstance(other, int):
+        if isinstance(other, (int, float)):
             return self.y == other
         elif isinstance(other, Constante):
             return self.y == other.y
         raise ValueError
+
+    def __mul__(self, other):
+        if isinstance(other, (int, float)):
+            return self.y * other
+        elif isinstance(other, Constante):
+            return self.y * other.y
+        elif isinstance(other, Funcion):
+            return Producto(Constante(self.y), other)
+        else:
+            raise ValueError
+
+    def __add__(self, other):
+        if isinstance(other, (int, float)):
+            return Constante(self.y + other)
+        elif isinstance(other, Constante):
+            return Constante(self.y + other.y)
+        elif isinstance(other, Funcion):
+            return Suma(self, other)
+        else:
+            raise ValueError
+
+    def __truediv__(self, other):
+        if other == 0:
+            raise ZeroDivisionError
+        if isinstance(other, (int, float)):
+            return Constante(self.y / other)
+        elif isinstance(other, Constante):
+            return Constante(self.y / other.y)
+        else:
+            raise ValueError
 
     def evaluar(self, a):
         return self.y
 
 
 class Suma(Funcion):
-    def __init__(self, terminos=()):
+    def __init__(self, f=None, g=None, terminos=()):
         super().__init__()
         self.terminos = []
-        for i in terminos:
-            self.terminos.append(i)
+        if f is None and g is None and len(terminos) > 1:
+            g = Constante(0)
+            for i in reversed(range(1, len(terminos))):
+                f = terminos[i]
+                g = Suma(f=f, g=g)
+            self.f = terminos[0]
+            self.g = g
+        elif f is not None and g is not None and len(terminos) == 0:
+            self.f = f
+            self.g = g
+        else:
+            raise ValueError
 
     def evaluar(self, a):
         """Evalua la función en x=a obteniendo así f(a)"""
-        suma = None
-        for i in self.terminos:
-            suma += i.evaluar()
-        return suma
+        return self.f.evaluar(a) + self.g.evaluar(a)
 
 
 class Potencia(Funcion):
@@ -65,18 +101,19 @@ class Potencia(Funcion):
 class Producto(Funcion):
     """Clase que representa en producto de dos funciones f y g"""
     def __new__(cls, f=Constante(1), g=Funcion()):
-        """Para monomios con coeficioente 0 se regresa la funcioón constante y=0 en vez de un
+        """Para productos con algún factor cero se regresa la función constante y=0 en vez de un
         objeto de clase Producto"""
         if isinstance(f, (int, float, Constante)):
             if f == 0:
                 return Constante(0)
+        if isinstance(g, (int, float, Constante)):
+            if g == 0:
+                return Constante(0)
+        if isinstance(f, (int, float, Constante)) and (g, (int, float, Constante)):
+            return Constante(f * g)
 
     def __init__(self, f=Constante(1), g=Funcion()):
         super().__init__()
-        if isinstance(f, (int, float)):
-            f = Constante(f)
-        if isinstance(g, (int, float)):
-            g = Constante(g)
         self.f = f
         self.g = g
 
@@ -85,9 +122,9 @@ class Producto(Funcion):
 
     def derivar(self):
         if isinstance(self.f, Constante):
-            return Producto(self.f.evaluar(), self.g.derivar())
+            return Producto(Constante(self.f.evaluar(0)), self.g.derivar())
         elif isinstance(self.g, Constante):
-            return Producto(self.g.evaluar(), self.f.derivar())
+            return Producto(Constante(self.g.evaluar(0)), self.f.derivar())
         else:
             return Suma((Producto(self.f, self.g.derivar()), Producto(self.f.derivar(), self.g)))
 
@@ -95,6 +132,20 @@ class Producto(Funcion):
 class Racional(Funcion):
     def __init__(self):
         super().__init__()
+
+
+class Identidad(Funcion):
+    def __init__(self):
+        super().__init__()
+
+    def evaluar(self, a):
+        return a
+
+    def derivar(self):
+        return Constante(1)
+
+    def integrar(self):
+        return Potencia(2)
 
 
 class Seno(Funcion):
@@ -116,7 +167,7 @@ class Coseno(Funcion):
         cos(a)
 
     def derivar(self):
-        return Producto(-1, Seno())
+        return Producto(Constante(-1), Seno())
 
 
 class Polinomio(Suma):
