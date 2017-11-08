@@ -6,6 +6,8 @@
 
 from math import sqrt
 from .fracciones import *
+import logging
+log = logging.getLogger(__name__)
 
 if __name__ == '__main__':
     print(__doc__)
@@ -27,6 +29,7 @@ class SumaNoDefinida(OperacionNoDefinida):
 
 class Renglon:
     def __init__(self, elementos=None, nombre="1"):
+        log.debug("Renglon(elementos={0} tipo={1})".format(elementos, type(elementos)))
         self.elementos = []
         # print(elementos, type(elementos))
         if elementos is not None and hasattr(elementos, "__len__"):
@@ -54,6 +57,7 @@ class Renglon:
         return self.elementos[item]
 
     def __add__(self, other):
+        log.debug("Renglon.__add__(other={0} tipo={1}".format(other, type(other)))
         """Sobrecarga del operador +"""
         # print("Metodo sum reng")
         if other.n != self.n:
@@ -96,13 +100,13 @@ class Renglon:
         en la forma
         self * other"""
         # print("Metodo mult reng")
-        if type(other) == int or type(other) == Fraccion:
+        if isinstance(other, (int, float, Fraccion)):
             elementos = []
             for i in self.elementos:
                 elementos.append(i * other)
             self.buscar_pivote()
             return Renglon(elementos)
-        if type(other) == Renglon:
+        if isinstance(other, Renglon):
             #print("multiplicacion de objetos renglon")
             raise Exception
 
@@ -111,6 +115,7 @@ class Renglon:
 
     def __setitem__(self, key, value):
         self.elementos[key] = value
+        self.contar_ceros()
 
     def norma(self):
         suma = 0
@@ -121,10 +126,10 @@ class Renglon:
     def buscar_pivote(self):
         self.contar_ceros()
         if self.ceros_i == self.n:
-            self.pivote = Fraccion(0)
+            self.pivote = 0
             return
         if self.ceros_d == self.n:
-            self.pivote_d = Fraccion(0)
+            self.pivote_d = 0
             return
         self.pivote = self.elementos[self.ceros_i]
         self.pivote_d = self.elementos[(-1) - self.ceros_d]
@@ -157,6 +162,8 @@ class Renglon:
 
 class Matriz:
     def __init__(self, renglones=(), renglones_indep=()):
+        # ToDo: definir banderas para no llamar a métodos que ya han sido llamados
+        # FixMe: actualmente reduccion_gaussiana puede ser llaamdo hasta cuatro veces con una sola llamada a un método
         self.m = len(renglones)
         if self.m != 0:
             maxi = len(renglones[0])
@@ -185,9 +192,9 @@ class Matriz:
             r = []
             for j in range(self.n):
                 if j == i:
-                    r.append(Fraccion(1))
+                    r.append(1)
                 else:
-                    r.append(Fraccion(0))
+                    r.append(0)
             r = Renglon(r)
             self.reng_ident.append(r)
         self.escalonada = False
@@ -301,9 +308,9 @@ class Matriz:
         r = []
         for j in range(self.n):
             if j == self.m:
-                r.append(Fraccion(1))
+                r.append(1)
             else:
-                r.append(Fraccion(0))
+                r.append(0)
         self.reng_ident.append(Renglon(r))
         self.m += 1
         if self.m == self.n:
@@ -342,8 +349,10 @@ class Matriz:
         """Método que obtiene la matriz triangular superior utilizando
         operaciones elementales con renglones
         Itera desde el primer hasta el último renglón"""
-        #print("gauss")
-        alfa = Fraccion(1) # escalar por el que se multiplica el renglon para hacer cero el elemento debajo del pivote
+        # ToDo: hacer algo para los indices incomprensibles, tal vez se puede usar self[indice][otro[indice]
+        # ToDo: en vez de la llamada larga self.reng[indice][self.reng[indice].atributo]  <-- queda feo :c
+        log.debug("reduccion_gaussiana()\n{0}".format(self.__repr__()))
+        alfa = 1  # escalar por el que se multiplica el renglon para hacer cero el elemento debajo del pivote
         self.__contar_ceros()
         if self.cuadrada:
             cambios = self.__ordenar()  # intercambia los renglones según el número de ceros que tienen a la izquierda
@@ -355,14 +364,23 @@ class Matriz:
             if self.renglones[i].ceros_i == self.n:
                 break
             for j in range(i+1, self.m): # se usa para hacer ceros desde el siguiente hasta el último
+                log.debug("antes sumar reng: {}".format(self.__repr__()))
                 if self.renglones[i].ceros_i == self.renglones[j].ceros_i:
                     alfa = 1 / self.renglones[i].pivote
                     alfa *= self.renglones[j].pivote * -1
+                    log.debug("{0} += {1} * {2}".format(self[j], self[i], alfa))
                     self.renglones[j] += self.renglones[i] * alfa  # sumar el multiplo de un renglon a otro
-
+                    if self.renglones[j][self.renglones[i].ceros_i] != 0:
+                        """Por las restricciones de las operaciones en punto flotante
+                        el elemneto debajo del pivote que se supone se hizo cero con la suma de renglones
+                        puede ser un flotante muy cercano a cero, esto no afecta el algoritmo de la 
+                        reducción gaussiana pero altera gauss-jordan al sumar a los pivotes
+                        números que se supone deben ser cero peno no lo son"""
+                        self.renglones[j][self.renglones[i].ceros_i] = 0  # asegurandose que el elemento debajo del
+                        # pivote es cero
                     if self.cuadrada:
+                        log.debug("{0} += {1} * {2}".format(self.reng_ident[j], self.reng_ident[i], alfa))
                         self.reng_ident[j] += self.reng_ident[i] * alfa
-                        #print(self.__repr__(), alfa, self.cuadrada)
                         # opera sobre la matriz identidad asociada para obtener la inversa (de existir)
                     # de esta forma no se puede calcular el determinante (modificando la matriz)
                     # sin que se "pierdan" las operaciones elementales hechas en la reducción gaussiana
@@ -370,16 +388,17 @@ class Matriz:
                         self.reng_aum[j] += self.reng_aum[i] * alfa
                 else:
                     break
+                log.debug("despues de sum reng: {0}".format(self.__repr__()))
+        log.debug("Fin reduccion_gaussiana()")
 
     def gauss_jordan(self):
         """Método que obtiene la matriz escalonada reducida a partir de la
         triangular superior obtenida por el método reduccion_gaussiana
         este metodo hace lo mismo que aquel pero iterando en sentido inverso"""
+        # ToDo: hacer lo mismo que en reduccion_gaussiana para los flotantes cercanos a cero que deberian ser cero
+        log.debug("gauss_jordan()\n{0}".format(self.__repr__()))
         self.reduccion_gaussiana()
-        for i in range(100000):
-            pass
-        #print("jordan========================================")
-        alfa = Fraccion(1)
+        alfa = 1
         for i in range(self.m-1, 0, -1):
             ##if self.renglones[i].ceros_d == self.n:
             #    continue
@@ -409,6 +428,7 @@ class Matriz:
 
     def determinar(self):
         """Método que calcula el determinante en matrices cuadradas"""
+        log.debug("determinar()\n{0}".format(self.__repr__()))
         if not self.cuadrada:
             return
         else:
@@ -416,12 +436,13 @@ class Matriz:
             if self.det is None:
                 self.det = 1
                 for i in range(self.m):
-                    self.det *= self.renglones[i][i]
+                    self.det = self.renglones[i][i] * self.det
                 self.det *= self.acum
                 self.acum = None
             return self.det
 
     def inversa(self):
+        log.debug("inversa()\n{0}".format(self.__repr__()))
         if not self.cuadrada:
             raise OperacionNoDefinida
         self.determinar()

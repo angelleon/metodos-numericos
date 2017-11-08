@@ -43,39 +43,67 @@ def leer_cuadrado():
     return c
 
 
-def leer_entero(texto="(n): "):
-    c = None
+def leer_entero(texto="entero", tag="n"):
     while True:
-        break
+        n = input("Ingrese {0}\n({1}): ".format(texto, tag))
+        try:
+            n = int(n)
+            return n
+        except ValueError:
+            print("¡ Ingrese  un entero !")
 
 
-def leer_real(texto="(n): "):
-    k = None
+def leer_real(texto="un número real", tag="n"):
     while True:
-        k = input(texto)
+        k = input("Ingrese {0}\n({1}):".format(texto, tag))
         try:
             k = float(k)
+            return k
         except ValueError:
             print("\n¡ Ingrese un valor numérico !")
             continue
-        break
-    return k
 
 
-def leer_intervalo(val_min=0, val_max=1):
+def leer_intervalo(val_min=None, val_max=None, tag_min="x_0", tag_max="x_f"):
+    en_rango_min = False
+    en_rango_max = False
+    if val_max is None:
+        val_max = "\u221e"
+    if val_min is None:
+        val_min = "-\u221e"
     while True:
         print("Ingrese un intervalo entre {0} y {1}".format(val_min, val_max))
-        x0 = leer_real("Ingrese x0\n(x0): ")
-        xf = leer_real("Ingrese xf\n(xf): ")
+        x0 = leer_real(tag_min, tag_min)
+        xf = leer_real(tag_max, tag_max)
         x0, xf = sorted((x0, xf))
-        if x0 < val_min or xf > val_max:
-            print("\n¡ Intervalo no valido !\n")
-        else:
+        if isinstance(val_min, (int, float)) and isinstance(val_max, (int, float)):
+            if val_min < x0 < val_max:
+                en_rango_min = True
+            if val_min < xf < val_max:
+                en_rango_max = True
+        elif isinstance(val_min, str) and isinstance(val_max, str):
+            en_rango_min = True
+            en_rango_max = True
+        elif isinstance(val_min, (int, float)) and isinstance(val_max, str):
+            if x0 > val_min:
+                en_rango_min = True
+                en_rango_max = True
+        elif isinstance(val_min, str) and isinstance(val_max, (int, float)):
+            if xf < val_max:
+                en_rango_max = True
+                en_rango_min = True
+        if x0 == xf:
+            print("¡Los valores no pueden ser iguales!")
+            continue
+        if en_rango_min and en_rango_max:
             break
+        else:
+            print("Valores fuera del intervalo")
     return x0, xf
 
 
-def leer_poly():
+def leer_poly():  # Depercated: función descontinuada, ahora tenemos un lector más elegante (y complicado)
+    # ToDo: eliminar función e implementar el lector nuevo en los programas que requieren de ésta
     term = 0
     while True:
         term = input("Introduzca la cantidad de terminos\n(terminos): ")
