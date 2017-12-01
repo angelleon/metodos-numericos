@@ -211,7 +211,8 @@ class Matriz:
                 self.reng_aum.append(i)
         else:
             self.aumentada = False
-
+            for i in range(self.m):
+                self.reng_aum.append(Renglon((0,)))
     def __str__(self):
         cadena = ''
         for i in range(self.m):
@@ -221,15 +222,66 @@ class Matriz:
 
     def __repr__(self):
         cadena = '<objeto matriz\n'
+        longitudes_reng = self.__long_reng()
+        longitudes_aum = self.__long_reng_aum()
+        longitudes_reng_ident = self.__long_reng_ident()
         for i in range(self.m):
             for j in range(self.n):
-                cadena += str(self.renglones[i][j]) + '\t'
-            cadena += "\t"
-            for j in range(self.n):
-                cadena += str(self.reng_ident[i][j]) + '\t'
-            cadena += '\n'
-        cadena += ">"
+                cadena += " " * (longitudes_reng[j] - len(str(self.renglones[i][j]))) + str(self.renglones[i][j]) + " "
+            if self.aumentada:
+                for j in range(len(self.reng_aum[0])):
+                    cadena += "|" + " " * (longitudes_aum[j] - len(str(self.reng_aum[i][j]))) + str(self.reng_aum[i][j]) + " "
+            if self.cuadrada:
+                cadena += "|"
+                for j in range(self.n):
+                    cadena +=" " * (longitudes_reng_ident[j] - len(str(self.reng_ident[i][j]))) + str(self.reng_ident[i][j]) + " "
+            cadena += "\n"
+        cadena += "m={0}, n={1}, cuadrada={2}, aumentada={3}>".format(self.m, self.n, self.cuadrada, self.aumentada)
         return cadena
+
+    def __long_reng(self):
+        """
+
+        :rtype: list(int)
+        """
+        longitudes = [[] for j in range(self.n)]
+        for i in range(self.m):
+            for j in range(self.n):
+                longitudes[j].append(len(str(self.renglones[i][j])))
+        for j in range(len(longitudes)):
+            longitudes[j] = max(longitudes[j])
+        return longitudes
+
+    def __long_reng_aum(self):
+        """
+
+        :rtype: list(int)
+        """
+        if not self.aumentada:
+            return
+        longitudes = [[] for j in range(len(self.reng_aum[0]))]
+        for i in range(len(self.reng_aum)):
+            for j in range(len(self.reng_aum[0])):
+                longitudes[j].append(len(str(self.reng_aum[i][j])))
+        for j in range(len(longitudes)):
+            longitudes[j] = max(longitudes[j])
+        return longitudes
+
+    def __long_reng_ident(self):
+        """
+
+        :rtype: list(int)
+        """
+        if not self.cuadrada:
+            return
+        longitudes = [[] for j in range(self.n)]
+        for i in range(self.m):
+            for j in range(self.n):
+                longitudes[j].append(len(str(self.reng_ident[i][j])))
+        for j in range(len(longitudes)):
+            longitudes[j] = max(longitudes[j])
+        return longitudes
+
 
     def __getitem__(self, item):
         return self.renglones[item]
@@ -423,6 +475,13 @@ class Matriz:
                         self.reng_ident[j] += self.reng_ident[i] * alfa
                     if self.aumentada:
                         self.reng_aum[j] += self.reng_aum[i] * alfa
+                    if self.renglones[j][-1 - self.renglones[i].ceros_d] != 0:
+                        """Por las restricciones de las operaciones en punto flotante
+                        el elemneto debajo del pivote que se supone se hizo cero con la suma de renglones
+                        puede ser un flotante muy cercano a cero, esto no afecta el algoritmo de la 
+                        reducción gaussiana pero altera gauss-jordan al sumar a los pivotes
+                        números que se supone deben ser cero peno no lo son"""
+                        self.renglones[j][-1 - self.renglones[i].ceros_d] = 0
         for i in range(self.m):
             self.__contar_ceros()
             if self.renglones[i].ceros_d != self.n:
