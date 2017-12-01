@@ -361,12 +361,23 @@ class Matriz:
         else:
             self.__ordenar()
         for i in range(self.m - 1):  # se pivotea sobre el i-esimo renglón
+            alfa = 1 / self.renglones[i].pivote
+            self.renglones[i] *= alfa
+            if self.renglones[i].pivote != 1:
+                log.debug("Corrigiendo pivote")
+                log.debug(self.__repr__())
+                self.renglones[i][self.renglones[i].ceros_i] = 1
+                log.debug(self.__repr__())
+            if self.cuadrada:
+                self.reng_ident[i] *= alfa
+            if self.aumentada:
+                self.reng_aum[i] *= alfa
             if self.renglones[i].ceros_i == self.n:
                 break
             for j in range(i+1, self.m): # se usa para hacer ceros desde el siguiente hasta el último
                 log.debug("antes sumar reng: {}".format(self.__repr__()))
                 if self.renglones[i].ceros_i == self.renglones[j].ceros_i:
-                    alfa = 1 / self.renglones[i].pivote
+                    alfa = self.renglones[i].pivote
                     alfa *= self.renglones[j].pivote * -1
                     log.debug("{0} += {1} * {2}".format(self[j], self[i], alfa))
                     self.renglones[j] += self.renglones[i] * alfa  # sumar el multiplo de un renglon a otro

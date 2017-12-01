@@ -21,70 +21,53 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301, USA.
 """
 
-import logging as log
+import logging
 from .fracciones import *
 from .matriz import Matriz, Renglon
 from .sel import SEL
 
+log = logging.getLogger(__name__)
+
 
 class ErrorLexico(Exception):
-    pass
+    def __init__(self, col=0):
+        self.col = col
+
+    def __str__(self):
+        return "Error léxico col: " + str(self.col)
 
 
 class ErrorSintactico(Exception):
-    pass
+    def __init__(self, col=0):
+        self.col = col
 
-
-class Correccion(Exception):
-    def __init__(self, renglon):
-        self.renglon = renglon
-
-
-class EntradaVacia(Exception):
-    pass
+    def __str__(self):
+        return "Error sintactico col: " + str(self.col)
 
 
 class FinMatriz(Exception):
     pass
 
 
-class Reingreso:
+class EntradaVacia(Exception):
     pass
 
 
 class Token:
-    def __init__(self, contenido="", clasificacion=0):
-        self.contenido = contenido
-        self.clasificacion = clasificacion
+    contenido = ""
+    clasificacion = 0
 
-        self.desconocido = 0
-        self.signo = 1
-        self.entero = 2
-        self.decimal = 3
-        self.incognita = 4
-        self.cociente = 5
-        self.igual = 6
-        self.fin_sel = 7
+    desconocido = 0
+    signo = 1
+    entero = 2
+    decimal = 3
+    incognita = 4
+    cociente = 5
+    igual = 6
+    fin_sel = 7
 
-    def __int__(self):
-        if self.clasificacion == self.entero:
-            return int(self.contenido)
-        elif self.clasificacion == self.decimal:
-            return 0
-        else:
-            raise ValueError
-
-    def __float__(self):
-        if self.clasificacion == self.entero:
-            return float(self.contenido)
-        elif self.clasificacion == self.decimal:
-            return float("0." + self.contenido)
-        else:
-            return ValueError
-
-    def __str__(self):
-        cadena = 'Token <"{0}", {1}, {2}>'.format(self.contenido, self.clasificacion, self.__str_clasif())
-        return cadena
+    positivo = 1
+    negativo = -1
 
     def __repr__(self):
         return self.__str__()
@@ -109,205 +92,239 @@ class Token:
 
 
 class AnalizadorLexico(Token):
-    vacio = False
-
-    def __init__(self, raw_reng=""):
+    def __init__(self, raw_ecu: str):
         super().__init__()
-        if len(raw_reng) == 0:
+        if len(raw_ecu) == 0:
+            self.vacio = True
             raise EntradaVacia
-        self.raw_rang = raw_reng
+        else:
+            self.vacio = False
+        self.__raw_ecu = raw_ecu
+        self.__pos_i = 0
+
+    def get_attrib(self):
+        return {"pos": self.__pos_i}
+
+    def set_attrib(self, attrib: dict):
+        self.__pos_i = attrib["pos"]
 
     def next_token(self):
-        print("next token")
-        if not self.vacio:
-            f = -1
-            estado = 0
-            buffer = ""
-            clasificacion = self.desconocido
-            raw_reng = self.raw_rang
-            # print(raw_reng)
-            while estado != f:
-                print(raw_reng)
-                if len(raw_reng) > 0:
-                    c = raw_reng[0].upper()
-                else:
-                    c = ""
-                print(c)
-                if c == '':
-                    break
-                if estado == 0:
-                    if c.isspace():
-                        pass
-                    elif c in ('+', '-'):
-                        estado = 1
-                        clasificacion = self.signo
-                    elif c.isdigit():
-                        estado = 2
-                        clasificacion = self.entero
-                    elif c == '.':
-                        estado = 3
-                        clasificacion = self.decimal
-                    elif c.isalpha():
-                        estado = 5
-                        clasificacion = self.incognita
-                    elif c == '/':
-                        estado = 7
-                        clasificacion = self.cociente
-                    elif c == '=':
-                        estado = 9
-                        clasificacion = self.igual
-                    elif c == ';':
-                        estado = 10
-                        clasificacion = self.fin_sel
-                    else:
-                        raise ErrorLexico
-                elif estado == 2:
-                    if c.isdigit():
-                        estado = 2
-                    else:
-                        estado = f
-                elif estado == 3:
-                    if c.isdigit():
-                        estado = 4
-                    else:
-                        raise ErrorLexico
-                elif estado == 4:
-                    if c.isdigit():
-                        pass
-                    else:
-                        estado = f
-                elif estado == 5:
-                    clasificacion = self.incognita
-                    estado = f
-                elif estado in (1, 7, 9):
-                    estado = f
-                elif estado == 10:
-                    raise FinMatriz
-                if estado > 0:
-                    buffer += c
-                if estado != f:
-                    raw_reng = raw_reng[1:]
-                    self.raw_rang = raw_reng
-                if len(self.raw_rang) == 0:
-                    self.vacio = True
-            return Token(buffer, clasificacion)
-        else:
-            return Token()
-
-
-class AnalizadorSintactico(Token):
-    def __init__(self, tokens=()):
-        super().__init__()
-        # print(tokens)
-        if len(tokens) == 0:
-            raise EntradaVacia
-        self.tokens = []
-        for i in tokens:
-            self.tokens.append(i)
-
-    def next_elemento(self, fracciones=True):
-        print("next elem")
-        numerador = ""
-        denominador = ""
-        incognita = "const"
-        f1 = -1
-        f2 = -2
-        f3 = -3
-        f4 = -4
+        log.debug("next token()")
+        f = -1
         estado = 0
-        while estado not in (f1, f2, f3, f4):
-            if len(self.tokens) > 0:
-                t = self.tokens[0]
-                print(self.tokens)
-                print(t)
-            if estado == 0:
-                if t.clasificacion == self.signo:
-                    estado = 1
-                    numerador += t.contenido
-                elif t.clasificacion == self.entero:
-                    estado = 2
-                    numerador += t.contenido
-                elif t.clasificacion == self.decimal:
-                    estado = 3
-                    numerador += t.contenido
-                elif t.clasificacion == self.incognita:
-                    estado = 4
-                elif t.clasificacion == self.igual:
-                    estado = f4
-                elif t.clasificacion == self.fin_sel:
-                    raise FinMatriz
-                else:
-                    raise ErrorSintactico
-            elif estado == 1:
-                if t.clasificacion == self.entero:
-                    estado = 2
-                elif t.clasificacion == self.decimal:
-                    estado = 3
-                elif t.clasificacion == self.incognita:
-                    estado = 4
-                else:
-                    raise ErrorSintactico
-                numerador += t.contenido
-            elif estado == 2:
-                if t.clasificacion == self.decimal:
-                    estado = 3
-                    numerador += t.contenido
-                elif t.clasificacion == self.cociente:
-                    estado = 6
-                else:
-                    estado = f1
-            elif estado == 3:
-                if t.clasificacion == self.cociente:
-                    estado = 6
-                else:
-                    estado = f1
-            elif estado == 4:
-                if t.clasificacion == self.entero:
-                    estado = 9
-                else:
-                    estado = f3
-                if numerador in ('+', '-'):
-                    numerador += '1'
-                incognita = t.contenido
-            elif estado == 6:
-                if t.clasificacion == self.decimal:
-                    estado = 7
-                    denominador += t.contenido
-                elif t.clasificacion == self.entero:
-                    estado = 8
-                    denominador += t.clasificacion
-                else:
-                    raise ErrorSintactico
-            elif estado == 7:
-                if t.clasificacion == self.incognita:
-                    estado = 4
-                else:
-                    estado = f2
-            elif estado == 8:
-                if t.clasificacion == self.decimal:
-                    estado = 7
-                    denominador += t.contenido
-                elif t.clasificacion == self.incognita:
-                    estado = 4
-                else:
-                    estado = f2
-            elif estado == 9:
-                estado = f3
-                incognita += t.contenido
-            if estado not in (f1, f2, f3):
-                self.tokens = self.tokens[1:]
-        if estado == f1:
-            denominador = 1
-        if estado in (f1, f2, f3):
-            if fracciones:
-                coeficiente = Fraccion(float(numerador), float(denominador))
+        buffer = ""
+        raw_ecu = self.__raw_ecu[self.__pos_i]
+        log.debug(raw_ecu)
+        while estado != f:
+            if len(raw_ecu) > 0:
+                c = raw_ecu[:1].upper()
             else:
-                coeficiente = float(numerador) / float(denominador)
+                c = ""
+            log.debug(c)
+            if c == '':
+                break
+            if estado == 0:
+                if c.isspace():
+                    pass
+                elif c in ('+', '-'):
+                    estado = 1
+                    self.clasificacion = self.signo
+                elif c.isdigit():
+                    estado = 2
+                    self.clasificacion = self.entero
+                elif c == '.':
+                    estado = 3
+                    self.clasificacion = self.decimal
+                elif c.isalpha():
+                    estado = 5
+                    self.clasificacion = self.incognita
+                elif c == '/':
+                    estado = 7
+                    self.clasificacion = self.cociente
+                elif c == '=':
+                    estado = 9
+                    self.clasificacion = self.igual
+                elif c == ';':
+                    estado = 10
+                    self.clasificacion = self.fin_sel
+                else:
+                    raise ErrorLexico
+            elif estado == 2:
+                if c.isdigit():
+                    estado = 2
+                else:
+                    estado = f
+            elif estado == 3:
+                if c.isdigit():
+                    estado = 4
+                else:
+                    raise ErrorLexico
+            elif estado == 4:
+                if c.isdigit():
+                    pass
+                else:
+                    estado = f
+            elif estado == 5:
+                self.clasificacion = self.incognita
+                estado = f
+            elif estado in (1, 7, 9):
+                estado = f
+            elif estado == 10:
+                raise FinMatriz
+            if estado > 0:
+                buffer += c
+            if estado != f:
+                raw_ecu = raw_ecu[1:]
+                self.__pos_i += 1
+            if self.__pos_i == len(self.__raw_ecu):
+                self.vacio = True
+        self.contenido = buffer
+
+
+class AnalizadorSintactico(AnalizadorLexico):
+    def __init__(self, raw_ecu: str):
+        super().__init__(raw_ecu)
+        if len(raw_ecu) == 0:
+            raise EntradaVacia
+
+    def match(self, clasificacion: int):
+        attrib = self.get_attrib()
+        self.next_token()
+        if self.clasificacion != clasificacion:
+            self.set_attrib(attrib)
+            return
+        if clasificacion == self.entero:
+            return int(self.contenido)
+        if clasificacion == self.decimal:
+            return float(self.clasificacion)
+        if clasificacion == self.signo:
+            if self.contenido == '+':
+                return self.positivo
+            else:
+                return self.negativo
+
+    def ecuacion(self):
+        self.miembro()
+        coincidencia = self.match(self.igual)
+        if coincidencia is None:
+            raise ErrorSintactico(self.get_attrib()["pos"])
+        self.miembro()
+
+    def miembro(self):
+        coincidencia = self.termino()
+        if coincidencia is None:
+            raise ErrorSintactico(self.get_attrib()["pos"])
+        terminos = [coincidencia]
+        coincidencia = self.rest_terminos()
+
+    def expandir_term(self, rest_term: tuple):
+        if rest_term is None:
+            return {}
         else:
-            incognita = 'igual'
-            coeficiente = None
-        elemento = {incognita: coeficiente}
-        return elemento
+            return self.expandir_term(rest_term[1])
+
+
+    def termino(self):
+        coincidencia = self.match(self.signo)
+        if coincidencia is None:
+            signo = self.positivo
+        else:
+            signo = coincidencia
+        coincidencia = self.numero()
+        if coincidencia is None:
+            hay_coef = False
+            coeficiente = 1
+        else:
+            hay_coef = True
+            coeficiente = coincidencia
+        coincidencia = self.variable()
+        if coincidencia is None:
+            variable = "const"
+        else:
+            variable = coincidencia
+        if not hay_coef and variable == "const":
+            return
+        return {variable: signo * coeficiente}
+
+    def rest_terminos(self):
+        coincidencia = self.match(self.signo)
+        if coincidencia is None:
+            return {"const": 0}, None
+        else:
+            signo = coincidencia
+        coincidencia = self.numero()
+        if coincidencia is None:
+            hay_coef = False
+            coef = 1
+        else:
+            hay_coef = True
+            coef = coincidencia
+        coincidencia = self.variable()
+        if coincidencia is None:
+            variable = "const"
+        else:
+            variable = coincidencia
+        if (not hay_coef) and variable == "const":
+            raise ErrorSintactico
+        return {variable: signo * coef}, self.rest_terminos()
+
+    def variable(self):
+        attrib = self.get_attrib()
+        coincidencia = self.match(self.incognita)
+        if coincidencia is None:
+            self.set_attrib(attrib)
+            return
+        variable = coincidencia
+        attrib = self.get_attrib()
+        coincidencia = self.match(self.entero)
+        if coincidencia is None:
+            return variable
+        else:
+            return str(variable) + str(coincidencia)
+
+    def numero(self):
+        attrib = self.get_attrib()
+        coincidenca = self.fraccion()
+        if coincidenca is None:
+            self.set_attrib(attrib)
+        else:
+            return coincidenca
+        attrib = self.get_attrib()
+        coincidenca = self.match(self.entero)
+        if coincidenca is None:
+            self.set_attrib(attrib)
+            entero = 0
+        else:
+            entero = coincidenca
+        attrib = self.get_attrib()
+        coincidenca = self.match(self.decimal)
+        if coincidenca is None:
+            self.set_attrib(attrib)
+            decimal = 0
+        else:
+            decimal = coincidenca
+        return entero + decimal
+
+    def fraccion(self):
+        attrib = self.get_attrib()
+        coincidencia = self.match(self.entero)
+        if coincidencia is None:
+            self.set_attrib(attrib)
+            return
+        numerador = coincidencia
+        attrib = self.get_attrib()
+        coincidencia = self.match(self.cociente)
+        if coincidencia is None:
+            self.set_attrib(attrib)
+            return
+        coincidencia = self.match(self.entero)
+        if coincidencia is None:
+            self.set_attrib(attrib)
+            return
+        denominador = coincidencia
+        if numerador / denominador == numerador // denominador:
+            return numerador // denominador
+        return numerador / denominador
 
 
 class LectorSEL:
@@ -440,8 +457,6 @@ class LectorSEL:
                         break
                     sel[n_ecu] = self.leer_ecu(n_ecu)
                     break
-            elif answ == "2":
-                raise Reingreso
             break
         return sel, False
 
@@ -469,8 +484,6 @@ class LectorSEL:
                     matriz_coef, bandera = self.corregir(matriz_coef)
             except FinMatriz:
                 break
-            except Reingreso:
-                continue
             if not bandera:
                 break
         return matriz_coef
