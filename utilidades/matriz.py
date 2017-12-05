@@ -398,24 +398,33 @@ class Matriz:
         # ToDo: hacer lo mismo que en reduccion_gaussiana para los flotantes cercanos a cero que deberian ser cero
         log.debug("gauss_jordan()\n{0}".format(self.__repr__()))
         self.reduccion_gaussiana()
+        self.__contar_ceros()
         alfa = 1
         for i in range(self.m-1, 0, -1):
             ##if self.renglones[i].ceros_d == self.n:
             #    continue
             for j in range(i - 1, -1, -1):
-                if self.renglones[i].ceros_d == self.renglones[j].ceros_d:
-                    alfa = 1 / self.renglones[i].pivote_d
-                    alfa *= self.renglones[j].pivote_d * -1
+                if self.renglones[j][self.renglones[i].ceros_i] != 0:
+                    alfa = 1 / self.renglones[i][self.renglones[i].ceros_i]
+                    alfa *= -1 * self.renglones[j][self.renglones[i].ceros_i]
                     self.renglones[j] += self.renglones[i] * alfa
                     self.acum = (1 / alfa) * self.acum
                     if self.cuadrada:
                         self.reng_ident[j] += self.reng_ident[i] * alfa
                     if self.aumentada:
                         self.reng_aum[j] += self.reng_aum[i] * alfa
+                    if self.renglones[j][self.renglones[i].ceros_i] != 0:
+                        """Por las restricciones de las operaciones en punto flotante
+                        el elemneto debajo del pivote que se supone se hizo cero con la suma de renglones
+                        puede ser un flotante muy cercano a cero, esto no afecta el algoritmo de la 
+                        reducción gaussiana pero altera gauss-jordan al sumar a los pivotes
+                        números que se supone deben ser cero peno no lo son"""
+                        self.renglones[j][self.renglones[i].ceros_i] = 0
+
         for i in range(self.m):
             self.__contar_ceros()
             if self.renglones[i].ceros_d != self.n:
-                alfa = 1 / self.renglones[i].pivote_d
+                alfa = 1 / self.renglones[i].pivote
                 self.renglones[i] *= alfa
                 if self.cuadrada:
                     self.reng_ident[i] *= alfa

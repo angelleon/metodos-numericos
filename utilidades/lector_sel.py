@@ -302,12 +302,140 @@ class AnalizadorSintactico(Token):
             if fracciones:
                 coeficiente = Fraccion(float(numerador), float(denominador))
             else:
-                coeficiente = float(numerador) / float(denominador)
+                return self.negativo
+
+    def ecuacion(self):
+        self.miembro()
+        coincidencia = self.match(self.igual)
+        if coincidencia is None:
+            raise ErrorSintactico(self.get_attrib()["pos"])
+        self.miembro()
+
+    def miembro(self):
+        coincidencia = self.termino()
+        if coincidencia is None:
+            raise ErrorSintactico(self.get_attrib()["pos"])
+        terminos = [coincidencia]
+        coincidencia = self.rest_terminos()
+
+    def expandir_term(self, rest_term: tuple[dict]):
+        """
+        :parameter self: object
+        :param rest_term: tuple(dict)
+        :rtype: object
+        """
+        term = {}
+        while True:
+            for key in rest_term[0].keys():
+                if key in term.keys():
+                    term[key] += rest_term[0][key]
+                else:
+                    term[key] = rest_term[0][key]
+            if rest_term[1] is None:
+                return term
+            rest_term = rest_term[1]
+
+    def termino(self):
+        coincidencia = self.match(self.signo)
+        if coincidencia is None:
+            signo = self.positivo
         else:
-            incognita = 'igual'
-            coeficiente = None
-        elemento = {incognita: coeficiente}
-        return elemento
+            signo = coincidencia
+        coincidencia = self.numero()
+        if coincidencia is None:
+            hay_coef = False
+            coeficiente = 1
+        else:
+            hay_coef = True
+            coeficiente = coincidencia
+        coincidencia = self.variable()
+        if coincidencia is None:
+            variable = "const"
+        else:
+            variable = coincidencia
+        if not hay_coef and variable == "const":
+            return
+        return {variable: signo * coeficiente}
+
+    def rest_terminos(self):
+        coincidencia = self.match(self.signo)
+        if coincidencia is None:
+            return {"const": 0}, None
+        else:
+            signo = coincidencia
+        coincidencia = self.numero()
+        if coincidencia is None:
+            hay_coef = False
+            coef = 1
+        else:
+            hay_coef = True
+            coef = coincidencia
+        coincidencia = self.variable()
+        if coincidencia is None:
+            variable = "const"
+        else:
+            variable = coincidencia
+        if (not hay_coef) and variable == "const":
+            raise ErrorSintactico
+        return {variable: signo * coef}, self.rest_terminos()
+
+    def variable(self):
+        attrib = self.get_attrib()
+        coincidencia = self.match(self.incognita)
+        if coincidencia is None:
+            self.set_attrib(attrib)
+            return
+        variable = coincidencia
+        attrib = self.get_attrib()
+        coincidencia = self.match(self.entero)
+        if coincidencia is None:
+            return variable
+        else:
+            return str(variable) + str(coincidencia)
+
+    def numero(self):
+        attrib = self.get_attrib()
+        coincidenca = self.fraccion()
+        if coincidenca is None:
+            self.set_attrib(attrib)
+        else:
+            return coincidenca
+        attrib = self.get_attrib()
+        coincidenca = self.match(self.entero)
+        if coincidenca is None:
+            self.set_attrib(attrib)
+            entero = 0
+        else:
+            entero = coincidenca
+        attrib = self.get_attrib()
+        coincidenca = self.match(self.decimal)
+        if coincidenca is None:
+            self.set_attrib(attrib)
+            decimal = 0
+        else:
+            decimal = coincidenca
+        return entero + decimal
+
+    def fraccion(self):
+        attrib = self.get_attrib()
+        coincidencia = self.match(self.entero)
+        if coincidencia is None:
+            self.set_attrib(attrib)
+            return
+        numerador = coincidencia
+        attrib = self.get_attrib()
+        coincidencia = self.match(self.cociente)
+        if coincidencia is None:
+            self.set_attrib(attrib)
+            return
+        coincidencia = self.match(self.entero)
+        if coincidencia is None:
+            self.set_attrib(attrib)
+            return
+        denominador = coincidencia
+        if numerador / denominador == numerador // denominador:
+            return numerador // denominador
+        return numerador / denominador
 
 
 class LectorSEL:

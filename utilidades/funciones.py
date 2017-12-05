@@ -323,6 +323,40 @@ class Polinomio(Funcion):
                     cadena += '^' + str(exp)
         return cadena
 
+    def tex_repr(self, decimales=-1):
+        cadena = "$"
+        if decimales >= 0:
+            for i in range(len(self.coeficientes)):
+                coef = self.coeficientes[i]
+                exp = self.exponentes[i]
+                entero = int(coef)
+                mantisa = coef - entero
+                if mantisa < 0:
+                    mantisa = str(mantisa)[3:]
+                else:
+                    mantisa = str(mantisa)[2:]
+                if decimales == -1:
+                    decimales = len(mantisa)
+                if i != 0:
+                    if coef >= 0:
+                        cadena += "+"
+                    else:
+                        if entero == 0:
+                            cadena += "-"
+                cadena += str(entero)
+                if len(mantisa) > decimales:
+                    cadena += "." + mantisa[:decimales]
+                else:
+                    cadena += "." + mantisa
+                if exp != 0:
+                    cadena += "x"
+                    if exp > 1:
+                        cadena += "^" + str(exp)
+            cadena += "$"
+            return cadena
+        else:
+            return "$" + self.__str__() + "$"
+
     def integrar(self):
         coef = []
         exp = []
