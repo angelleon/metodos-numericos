@@ -349,6 +349,9 @@ class Polinomio(Funcion):
                 if i != 0:
                     if coef >= 0:
                         cadena += "+"
+                    else:
+                        if entero == 0:
+                            cadena += "-"
                 cadena += str(entero)
                 if len(mantisa) > decimales:
                     cadena += "." + mantisa[:decimales]

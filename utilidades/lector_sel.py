@@ -217,12 +217,22 @@ class AnalizadorSintactico(AnalizadorLexico):
         terminos = [coincidencia]
         coincidencia = self.rest_terminos()
 
-    def expandir_term(self, rest_term: tuple):
-        if rest_term is None:
-            return {}
-        else:
-            return self.expandir_term(rest_term[1])
-
+    def expandir_term(self, rest_term: tuple[dict]):
+        """
+        :parameter self: object
+        :param rest_term: tuple(dict)
+        :rtype: object
+        """
+        term = {}
+        while True:
+            for key in rest_term[0].keys():
+                if key in term.keys():
+                    term[key] += rest_term[0][key]
+                else:
+                    term[key] = rest_term[0][key]
+            if rest_term[1] is None:
+                return term
+            rest_term = rest_term[1]
 
     def termino(self):
         coincidencia = self.match(self.signo)

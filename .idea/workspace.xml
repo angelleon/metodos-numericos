@@ -2,8 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="aa8f3156-0890-49ce-982e-33eff5f58557" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/puntos" afterPath="$PROJECT_DIR$/puntos" />
+      <change beforePath="$PROJECT_DIR$/puntos.csv" afterPath="$PROJECT_DIR$/puntos.csv" />
+      <change beforePath="$PROJECT_DIR$/regresion_lineal.py" afterPath="$PROJECT_DIR$/regresion_lineal.py" />
+      <change beforePath="$PROJECT_DIR$/regresion_polinomial.py" afterPath="$PROJECT_DIR$/regresion_polinomial.py" />
+      <change beforePath="$PROJECT_DIR$/utilidades/funciones.py" afterPath="$PROJECT_DIR$/utilidades/funciones.py" />
+      <change beforePath="$PROJECT_DIR$/utilidades/lector_sel.py" afterPath="$PROJECT_DIR$/utilidades/lector_sel.py" />
       <change beforePath="$PROJECT_DIR$/utilidades/matriz.py" afterPath="$PROJECT_DIR$/utilidades/matriz.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -21,8 +26,8 @@
       <file leaf-file-name="matriz.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utilidades/matriz.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2062">
-              <caret line="272" column="25" lean-forward="false" selection-start-line="272" selection-start-column="25" selection-end-line="272" selection-end-column="25" />
+            <state relative-caret-position="174">
+              <caret line="470" column="75" lean-forward="false" selection-start-line="470" selection-start-column="75" selection-end-line="470" selection-end-column="75" />
               <folding />
             </state>
           </provider>
@@ -31,8 +36,8 @@
       <file leaf-file-name="regresion_lineal.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/regresion_lineal.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2610">
-              <caret line="181" column="0" lean-forward="false" selection-start-line="181" selection-start-column="0" selection-end-line="181" selection-end-column="0" />
+            <state relative-caret-position="435">
+              <caret line="29" column="87" lean-forward="false" selection-start-line="29" selection-start-column="87" selection-end-line="29" selection-end-column="87" />
               <folding />
             </state>
           </provider>
@@ -41,88 +46,11 @@
       <file leaf-file-name="regresion_polinomial.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/regresion_polinomial.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="195" column="24" lean-forward="false" selection-start-line="195" selection-start-column="24" selection-end-line="195" selection-end-column="24" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="spam.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spam.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="28" column="24" lean-forward="false" selection-start-line="28" selection-start-column="24" selection-end-line="28" selection-end-column="24" />
+            <state relative-caret-position="975">
+              <caret line="72" column="0" lean-forward="false" selection-start-line="72" selection-start-column="0" selection-end-line="73" selection-end-column="78" />
               <folding>
-                <element signature="e#0#10#0" expanded="true" />
+                <element signature="e#805#814#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="lector_sel.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utilidades/lector_sel.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2985">
-              <caret line="202" column="17" lean-forward="false" selection-start-line="202" selection-start-column="17" selection-end-line="202" selection-end-column="17" />
-              <folding>
-                <element signature="e#800#814#0" expanded="true" />
-                <element signature="e#1602#1623#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="polinomios.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utilidades/polinomios.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="30" lean-forward="false" selection-start-line="2" selection-start-column="30" selection-end-line="2" selection-end-column="30" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="funciones.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utilidades/funciones.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5265">
-              <caret line="353" column="54" lean-forward="false" selection-start-line="353" selection-start-column="54" selection-end-line="353" selection-end-column="54" />
-              <folding>
-                <element signature="e#95#132#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="simpson.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/simpson.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1965">
-              <caret line="138" column="8" lean-forward="false" selection-start-line="138" selection-start-column="8" selection-end-line="139" selection-end-column="43" />
-              <folding>
-                <element signature="e#794#804#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="lector_puntos.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utilidades/lector_puntos.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2745">
-              <caret line="183" column="0" lean-forward="false" selection-start-line="183" selection-start-column="0" selection-end-line="183" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="lector_polinomios.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utilidades/lector_polinomios.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1380">
-              <caret line="96" column="20" lean-forward="false" selection-start-line="96" selection-start-column="20" selection-end-line="97" selection-end-column="39" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -223,21 +151,21 @@
         <option value="$PROJECT_DIR$/utilidades/minimos_cuadrados1.py" />
         <option value="$PROJECT_DIR$/simpson.py" />
         <option value="$PROJECT_DIR$/minimos_cuadrados.py" />
-        <option value="$PROJECT_DIR$/utilidades/lector_sel.py" />
         <option value="$PROJECT_DIR$/utilidades/lector_puntos.py" />
-        <option value="$PROJECT_DIR$/regresion_lineal.py" />
         <option value="$PROJECT_DIR$/spam.py" />
         <option value="$PROJECT_DIR$/utilidades/funciones.py" />
+        <option value="$PROJECT_DIR$/utilidades/lector_sel.py" />
         <option value="$PROJECT_DIR$/regresion_polinomial.py" />
+        <option value="$PROJECT_DIR$/regresion_lineal.py" />
         <option value="$PROJECT_DIR$/utilidades/matriz.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="153" />
-    <option name="y" value="110" />
-    <option name="width" value="1050" />
-    <option name="height" value="490" />
+    <option name="x" value="138" />
+    <option name="y" value="227" />
+    <option name="width" value="1042" />
+    <option name="height" value="486" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -728,7 +656,14 @@
       <option name="project" value="LOCAL" />
       <updated>1510122043042</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="stable release :v">
+      <created>1512167352489</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1512167352489</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TodoView">
@@ -741,19 +676,18 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="153" y="110" width="1368" height="768" extended-state="6" />
-    <editor active="true" />
+    <frame x="138" y="227" width="1368" height="768" extended-state="6" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20699926" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.42144454" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39596274" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.51552796" sideWeight="0.5030303" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4332298" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="17" y="241" width="1320" height="392" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32919255" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.49068323" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4332298" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="17" y="241" width="1320" height="392" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23787878" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28881988" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.51552796" sideWeight="0.4969697" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.51552796" sideWeight="0.4969697" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -803,62 +737,62 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utilidades/lector_sel.py</url>
-          <line>414</line>
+          <line>424</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utilidades/lector_sel.py</url>
-          <line>415</line>
+          <line>425</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utilidades/lector_sel.py</url>
-          <line>379</line>
+          <line>389</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utilidades/lector_sel.py</url>
-          <line>387</line>
+          <line>397</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utilidades/lector_sel.py</url>
-          <line>339</line>
+          <line>349</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utilidades/lector_sel.py</url>
-          <line>345</line>
+          <line>355</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utilidades/lector_sel.py</url>
-          <line>350</line>
+          <line>360</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utilidades/lector_sel.py</url>
-          <line>346</line>
+          <line>356</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utilidades/lector_sel.py</url>
-          <line>355</line>
+          <line>365</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utilidades/lector_sel.py</url>
-          <line>366</line>
+          <line>376</line>
           <option name="timeStamp" value="14" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utilidades/lector_sel.py</url>
-          <line>368</line>
+          <line>378</line>
           <option name="timeStamp" value="15" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utilidades/lector_sel.py</url>
-          <line>367</line>
+          <line>377</line>
           <option name="timeStamp" value="16" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -868,12 +802,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/regresion_lineal.py</url>
-          <line>181</line>
+          <line>193</line>
           <option name="timeStamp" value="21" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/regresion_lineal.py</url>
-          <line>180</line>
+          <line>192</line>
           <option name="timeStamp" value="22" />
         </line-breakpoint>
       </breakpoints>
@@ -1091,40 +1025,10 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/simp" />
-    <entry file="file://$PROJECT_DIR$/regresion_lineal.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2610">
-          <caret line="181" column="0" lean-forward="false" selection-start-line="181" selection-start-column="0" selection-end-line="181" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spam.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
           <caret line="28" column="24" lean-forward="false" selection-start-line="28" selection-start-column="24" selection-end-line="28" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utilidades/lector_sel.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2985">
-          <caret line="202" column="17" lean-forward="false" selection-start-line="202" selection-start-column="17" selection-end-line="202" selection-end-column="17" />
-          <folding>
-            <element signature="e#800#814#0" expanded="true" />
-            <element signature="e#1602#1623#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utilidades/polinomios.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="30" lean-forward="false" selection-start-line="2" selection-start-column="30" selection-end-line="2" selection-end-column="30" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1140,7 +1044,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1380">
           <caret line="96" column="20" lean-forward="false" selection-start-line="96" selection-start-column="20" selection-end-line="97" selection-end-column="39" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1148,35 +1051,57 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1965">
           <caret line="138" column="8" lean-forward="false" selection-start-line="138" selection-start-column="8" selection-end-line="139" selection-end-column="43" />
-          <folding>
-            <element signature="e#794#804#0" expanded="true" />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utilidades/polinomios.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="18" lean-forward="true" selection-start-line="9" selection-start-column="18" selection-end-line="9" selection-end-column="18" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/utilidades/funciones.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5265">
-          <caret line="353" column="54" lean-forward="false" selection-start-line="353" selection-start-column="54" selection-end-line="353" selection-end-column="54" />
-          <folding>
-            <element signature="e#95#132#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="1065">
+          <caret line="353" column="40" lean-forward="false" selection-start-line="353" selection-start-column="40" selection-end-line="353" selection-end-column="40" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/regresion_polinomial.py">
+    <entry file="file://$PROJECT_DIR$/utilidades/lector_sel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="195" column="24" lean-forward="false" selection-start-line="195" selection-start-column="24" selection-end-line="195" selection-end-column="24" />
-          <folding />
+        <state relative-caret-position="165">
+          <caret line="217" column="43" lean-forward="false" selection-start-line="217" selection-start-column="43" selection-end-line="217" selection-end-column="43" />
+          <folding>
+            <element signature="e#800#814#0" expanded="true" />
+            <element signature="e#1602#1623#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/utilidades/matriz.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2062">
-          <caret line="272" column="25" lean-forward="false" selection-start-line="272" selection-start-column="25" selection-end-line="272" selection-end-column="25" />
+        <state relative-caret-position="174">
+          <caret line="470" column="75" lean-forward="false" selection-start-line="470" selection-start-column="75" selection-end-line="470" selection-end-column="75" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/regresion_lineal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="29" column="87" lean-forward="false" selection-start-line="29" selection-start-column="87" selection-end-line="29" selection-end-column="87" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/regresion_polinomial.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="975">
+          <caret line="72" column="0" lean-forward="false" selection-start-line="72" selection-start-column="0" selection-end-line="73" selection-end-column="78" />
+          <folding>
+            <element signature="e#805#814#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

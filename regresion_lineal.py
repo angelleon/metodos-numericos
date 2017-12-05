@@ -28,7 +28,6 @@ import sys
 import logging as log
 import stat
 from utilidades.lector_puntos import AnalizadorSintactico, ErrorLexico, ErrorSintactico
-from utilidades.lectores import leer_entero
 import utilidades.funciones as funcion
 from utilidades.matriz import Matriz, Renglon
 try:
@@ -71,9 +70,14 @@ def check_files(f_list):
                 exit(1)
 
 
+def print_help():
+    print("Uso:\n\t./regresion_polinomial archivo1 [ archivo2 ... archivoN ]")
+
+
 def check_argv(argv):
     if len(argv) == 1:
         log.critical("No se ha especificado ningun archivo del cual leer los puntos")
+        print_help()
         exit(1)
     argv = argv[1:]
     opciones = []
@@ -116,6 +120,7 @@ def graficar(p: funcion.Polinomio, x_vect: list, y_vect: list):
         x_vals = [x_0 + delta_x * i for i in range(int((x_f - x_0) / delta_x))]
         y_vals = [p.evaluar(x_i) for x_i in x_vals]
         ax.plot(x_vals, y_vals, color="magenta")
+        plot.title(p.tex_repr(5))
         plot.show()
 
 
@@ -137,7 +142,14 @@ def leer_puntos(f_list: list) -> (list, list):
             lineas = f.read()
             an_sint = AnalizadorSintactico(lineas)
             while True:
-                x_i, y_i = an_sint.punto()
+                try:
+                    x_i, y_i = an_sint.punto()
+                except ErrorLexico as e_lex:
+                    print(e_lex)
+                    exit(0)
+                except ErrorSintactico as e_sint:
+                    print(e_sint)
+                    exit(0)
                 if x_i is not None:
                     x_vect.append(x_i)
                     y_vect.append(y_i)

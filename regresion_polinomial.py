@@ -70,9 +70,14 @@ def check_files(f_list):
                 exit(1)
 
 
+def print_help():
+    print("Uso:\n\t./regresion_polinomial archivo1 [ archivo2 ... archivoN ]")
+
+
 def check_argv(argv):
     if len(argv) == 1:
         log.critical("No se ha especificado ningun archivo del cual leer los puntos")
+        print_help()
         exit(1)
     argv = argv[1:]
     opciones = []
@@ -139,7 +144,14 @@ def leer_puntos(f_list: list) -> (list, list):
             lineas = f.read()
             an_sint = AnalizadorSintactico(lineas)
             while True:
-                x_i, y_i = an_sint.punto()
+                try:
+                    x_i, y_i = an_sint.punto()
+                except ErrorLexico as e_lex:
+                    print(e_lex)
+                    exit(0)
+                except ErrorSintactico as e_sint:
+                    print(e_sint)
+                    exit(0)
                 if x_i is not None:
                     x_vect.append(x_i)
                     y_vect.append(y_i)
