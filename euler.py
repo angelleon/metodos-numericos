@@ -13,7 +13,7 @@ class Euler:
 
 def write_2f(f, k, pi_aprox):
     if f is None:
-        raise Exception #  Especificar excepcion para puntero nulo
+        raise Exception  # Especificar excepcion para puntero nulo
     f.write(str(k) + '\t' + str(pi_aprox) + "\n")
         
 
