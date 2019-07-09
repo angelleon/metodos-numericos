@@ -34,10 +34,19 @@ import logging
 from .fracciones import *
 from .matriz import Matriz, Renglon
 from .sel import SEL
+from typing import Sized
 
 
 class ErrorLexico(Exception):
+<<<<<<< HEAD
     pass
+=======
+    def __init__(self, col=0):
+        self.col = col
+
+    def __str__(self):
+        return "Error léxico col: " + str(self.col) + "\n" + (" " * self.col) + "^"
+>>>>>>> changed returned objects
 
 
 class ErrorSintactico(Exception):
@@ -124,18 +133,9 @@ class AnalizadorLexico(Token):
 
     def __init__(self, raw_reng=""):
         super().__init__()
-<<<<<<< HEAD
         if len(raw_reng) == 0:
             raise EntradaVacia
         self.raw_rang = raw_reng
-=======
-        if len(raw_ecu) == 0:
-            self.vacio = True
-        else:
-            self.vacio = False
-        self.__raw_ecu = raw_ecu
-        self.__pos_i = 0
->>>>>>> :u
 
     def next_token(self):
         print("next token")
@@ -401,7 +401,7 @@ class AnalizadorSintactico(AnalizadorLexico):
     def expandir_term(rest_term: tuple):
         """
         :parameter self: object
-        :param rest_term: iterable
+        :param rest_term: Sized
         :rtype: dict
         """
         log.debug("expandir_term()")
@@ -539,7 +539,6 @@ class LectorSEL:
         pass
 
     def leer_ecu(self, n_ecu):
-        raw_ecu = ''
         while True:
             raw_ecu = input("Ingrese ecuación\n(E{0}): ".format(n_ecu + 1))
             self.an_sint.set_raw_ecu(raw_ecu)
@@ -600,7 +599,8 @@ class LectorSEL:
 =======
             ecuaciones.append(ecu)
             n_ecu += 1
-        return 0
+        return ecuaciones
+    
 
     @staticmethod
     def reducir(ecu):
