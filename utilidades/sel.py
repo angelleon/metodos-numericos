@@ -7,9 +7,9 @@ class Parametro:
 
 
 class Ecuacion:
-    def __init__(self, prim_miem: dict, seg_miem:dict):
+    def __init__(self, prim_miem: dict, seg_miem:dict):  # ToDo: implementar clase
+        pass
         
-
 
 class SEL:
     def __init__(self, ecuaciones: tuple = None, variables: tuple = None):
@@ -20,6 +20,7 @@ class SEL:
             self.m = len(ecuaciones)
             n = 0
             for i in ecuaciones:
+                pass
 
         if variables is not None:
             self.variables = tuple(variables)
