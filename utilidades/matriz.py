@@ -332,7 +332,6 @@ class Matriz:
     def __ordenar(self):
         """Método que intercambia los renglones de acuerdo con los el
         número de ceros que tienen del lado izquierdo"""
-        r = None
         self.__contar_ceros()
         cont = 0
         for i in range(self.m):  # bubble sort
