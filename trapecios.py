@@ -25,6 +25,7 @@ MA 02110-1301, USA.
 import sys
 import time
 import logging as log
+from threading import Thread 
 from utilidades.lectores import leer_intervalo, leer_csignif
 from utilidades.util import calc_toler, continuar
 import utilidades.funciones as funcion
@@ -195,6 +196,33 @@ def ingresar(f=None, a=None, b=None, toler=None, c_signif=None):
     c_signif = leer_csignif()
     toler = calc_toler(c_signif)
     return ingresar(f, a, b, toler, c_signif)
+    
+class IntegradorTrapecios(Integrador):
+	def __init__(f, a, b, n):
+		super().__init__()
+		self.f = f
+		self.a = a
+		self.b = b
+		self.n = n
+		self._n_threads = 4
+		self.entradas = [[] for _ in range(self._n_threads)]
+		
+		
+	def integrar():
+		pass
+		
+		
+	def _trapecios(a, b, n):
+		delta_x = (b - a) / n
+		area = 0
+		area += self.f.eval(a)
+		area += self.f.eval(b)
+		area /= 2
+		for i in range(1, n):
+			area += self.f.eval(a + delta_x * i)
+			
+			
+		
 
 
 def main(argv):
