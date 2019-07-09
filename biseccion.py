@@ -3,7 +3,7 @@
 
 import sys
 from math import sin, pi
-from utilidades.lectores import leer_real, leer_csignif
+from utilidades.lectores import leer_real, leer_csignif, leer_intervalo
 from utilidades.util import calc_toler
 
 

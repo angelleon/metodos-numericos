@@ -211,7 +211,8 @@ class Matriz:
                 self.reng_aum.append(i)
         else:
             self.aumentada = False
-
+            for i in range(self.m):
+                self.reng_aum.append(Renglon((0,)))
     def __str__(self):
         cadena = ''
         for i in range(self.m):
@@ -221,15 +222,66 @@ class Matriz:
 
     def __repr__(self):
         cadena = '<objeto matriz\n'
+        longitudes_reng = self.__long_reng()
+        longitudes_aum = self.__long_reng_aum()
+        longitudes_reng_ident = self.__long_reng_ident()
         for i in range(self.m):
             for j in range(self.n):
-                cadena += str(self.renglones[i][j]) + '\t'
-            cadena += "\t"
-            for j in range(self.n):
-                cadena += str(self.reng_ident[i][j]) + '\t'
-            cadena += '\n'
-        cadena += ">"
+                cadena += " " * (longitudes_reng[j] - len(str(self.renglones[i][j]))) + str(self.renglones[i][j]) + " "
+            if self.aumentada:
+                for j in range(len(self.reng_aum[0])):
+                    cadena += "|" + " " * (longitudes_aum[j] - len(str(self.reng_aum[i][j]))) + str(self.reng_aum[i][j]) + " "
+            if self.cuadrada:
+                cadena += "|"
+                for j in range(self.n):
+                    cadena +=" " * (longitudes_reng_ident[j] - len(str(self.reng_ident[i][j]))) + str(self.reng_ident[i][j]) + " "
+            cadena += "\n"
+        cadena += "m={0}, n={1}, cuadrada={2}, aumentada={3}>".format(self.m, self.n, self.cuadrada, self.aumentada)
         return cadena
+
+    def __long_reng(self):
+        """
+
+        :rtype: list(int)
+        """
+        longitudes = [[] for j in range(self.n)]
+        for i in range(self.m):
+            for j in range(self.n):
+                longitudes[j].append(len(str(self.renglones[i][j])))
+        for j in range(len(longitudes)):
+            longitudes[j] = max(longitudes[j])
+        return longitudes
+
+    def __long_reng_aum(self):
+        """
+
+        :rtype: list(int)
+        """
+        if not self.aumentada:
+            return
+        longitudes = [[] for j in range(len(self.reng_aum[0]))]
+        for i in range(len(self.reng_aum)):
+            for j in range(len(self.reng_aum[0])):
+                longitudes[j].append(len(str(self.reng_aum[i][j])))
+        for j in range(len(longitudes)):
+            longitudes[j] = max(longitudes[j])
+        return longitudes
+
+    def __long_reng_ident(self):
+        """
+
+        :rtype: list(int)
+        """
+        if not self.cuadrada:
+            return
+        longitudes = [[] for j in range(self.n)]
+        for i in range(self.m):
+            for j in range(self.n):
+                longitudes[j].append(len(str(self.reng_ident[i][j])))
+        for j in range(len(longitudes)):
+            longitudes[j] = max(longitudes[j])
+        return longitudes
+
 
     def __getitem__(self, item):
         return self.renglones[item]
@@ -332,7 +384,6 @@ class Matriz:
     def __ordenar(self):
         """Método que intercambia los renglones de acuerdo con los el
         número de ceros que tienen del lado izquierdo"""
-        r = None
         self.__contar_ceros()
         cont = 0
         for i in range(self.m):  # bubble sort
@@ -361,12 +412,23 @@ class Matriz:
         else:
             self.__ordenar()
         for i in range(self.m - 1):  # se pivotea sobre el i-esimo renglón
+            alfa = 1 / self.renglones[i].pivote
+            self.renglones[i] *= alfa
+            if self.renglones[i].pivote != 1:
+                log.debug("Corrigiendo pivote")
+                log.debug(self.__repr__())
+                self.renglones[i][self.renglones[i].ceros_i] = 1
+                log.debug(self.__repr__())
+            if self.cuadrada:
+                self.reng_ident[i] *= alfa
+            if self.aumentada:
+                self.reng_aum[i] *= alfa
             if self.renglones[i].ceros_i == self.n:
                 break
             for j in range(i+1, self.m): # se usa para hacer ceros desde el siguiente hasta el último
                 log.debug("antes sumar reng: {}".format(self.__repr__()))
                 if self.renglones[i].ceros_i == self.renglones[j].ceros_i:
-                    alfa = 1 / self.renglones[i].pivote
+                    alfa = self.renglones[i].pivote
                     alfa *= self.renglones[j].pivote * -1
                     log.debug("{0} += {1} * {2}".format(self[j], self[i], alfa))
                     self.renglones[j] += self.renglones[i] * alfa  # sumar el multiplo de un renglon a otro
@@ -398,24 +460,32 @@ class Matriz:
         # ToDo: hacer lo mismo que en reduccion_gaussiana para los flotantes cercanos a cero que deberian ser cero
         log.debug("gauss_jordan()\n{0}".format(self.__repr__()))
         self.reduccion_gaussiana()
+        self.__contar_ceros()
         alfa = 1
         for i in range(self.m-1, 0, -1):
             ##if self.renglones[i].ceros_d == self.n:
             #    continue
             for j in range(i - 1, -1, -1):
-                if self.renglones[i].ceros_d == self.renglones[j].ceros_d:
-                    alfa = 1 / self.renglones[i].pivote_d
-                    alfa *= self.renglones[j].pivote_d * -1
+                if self.renglones[j][self.renglones[i].ceros_i] != 0:
+                    alfa = 1 / self.renglones[i][self.renglones[i].ceros_i]
+                    alfa *= -1 * self.renglones[j][self.renglones[i].ceros_i]
                     self.renglones[j] += self.renglones[i] * alfa
                     self.acum = (1 / alfa) * self.acum
                     if self.cuadrada:
                         self.reng_ident[j] += self.reng_ident[i] * alfa
                     if self.aumentada:
                         self.reng_aum[j] += self.reng_aum[i] * alfa
+                    if self.renglones[j][self.renglones[i].ceros_i] != 0:
+                        """Por las restricciones de las operaciones en punto flotante
+                        el elemneto debajo del pivote que se supone se hizo cero con la suma de renglones
+                        puede ser un flotante muy cercano a cero, esto no afecta el algoritmo de la 
+                        reducción gaussiana pero altera gauss-jordan al sumar a los pivotes
+                        números que se supone deben ser cero peno no lo son"""
+                        self.renglones[j][self.renglones[i].ceros_i] = 0
         for i in range(self.m):
             self.__contar_ceros()
             if self.renglones[i].ceros_d != self.n:
-                alfa = 1 / self.renglones[i].pivote_d
+                alfa = 1 / self.renglones[i].pivote
                 self.renglones[i] *= alfa
                 if self.cuadrada:
                     self.reng_ident[i] *= alfa
