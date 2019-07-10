@@ -23,12 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 MA 02110-1301, USA.
 """
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 import logging as log
-=======
-=======
->>>>>>> c8034621e7af457b6952ea130bb30741d27a0a78
 __doc__ = """Modulo que define funciones para leer matrices interactivamente
 y convertir el texto ingresado en objetos. Este archivo por si mismo no hace nada"""
 
