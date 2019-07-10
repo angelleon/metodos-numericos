@@ -121,10 +121,11 @@ class Fraccion:
             other = Fraccion(other)
         return Fraccion(self.numerador * other.numerador, self.denominador * other.denominador)
 
-    # def __rmul__(self, other):
-    #    """Sobrecarga del operador *
-    #    other * self"""
-    #    return self.__mul__(other)
+    def __rmul__(self, other):
+        """Sobrecarga del operador *
+        other * self"""
+        if isinstance(other, int):
+            return self.__mul__(other)
 
     def __truediv__(self, other):
         """Sobrecarga del operador /

@@ -24,13 +24,15 @@ MA 02110-1301, USA.
 """
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import logging as log
 =======
+=======
+>>>>>>> c8034621e7af457b6952ea130bb30741d27a0a78
 __doc__ = """Modulo que define funciones para leer matrices interactivamente
 y convertir el texto ingresado en objetos. Este archivo por si mismo no hace nada"""
 
 import logging
->>>>>>> :u
 from .fracciones import *
 from .matriz import Matriz, Renglon
 from .sel import SEL
@@ -38,71 +40,52 @@ from typing import Sized
 
 
 class ErrorLexico(Exception):
-<<<<<<< HEAD
-    pass
-=======
     def __init__(self, col=0):
         self.col = col
 
     def __str__(self):
         return "Error léxico col: " + str(self.col) + "\n" + (" " * self.col) + "^"
->>>>>>> changed returned objects
+
+
+class ErrorLexico(Exception):
+    def __init__(self, col=0):
+        self.col = col
+
+    def __str__(self):
+        return "Error léxico col: " + str(self.col) + "\n" + (" " * self.col) + "^"
 
 
 class ErrorSintactico(Exception):
-    pass
+    def __init__(self, col=0):
+        self.col = col
 
-
-class Correccion(Exception):
-    def __init__(self, renglon):
-        self.renglon = renglon
-
-
-class EntradaVacia(Exception):
-    pass
+    def __str__(self):
+        return "Error sintactico col: " + str(self.col)
 
 
 class FinSEL(Exception):
     pass
 
 
-class Reingreso:
+class EntradaVacia(Exception):
     pass
 
 
 class Token:
-    def __init__(self, contenido="", clasificacion=0):
-        self.contenido = contenido
-        self.clasificacion = clasificacion
+    contenido = ""
+    clasificacion = 0
 
-        self.desconocido = 0
-        self.signo = 1
-        self.entero = 2
-        self.decimal = 3
-        self.incognita = 4
-        self.cociente = 5
-        self.igual = 6
-        self.fin_sel = 7
+    desconocido = 0
+    signo = 1
+    entero = 2
+    decimal = 3
+    incognita = 4
+    cociente = 5
+    igual = 6
+    fin_sel = 7
 
-    def __int__(self):
-        if self.clasificacion == self.entero:
-            return int(self.contenido)
-        elif self.clasificacion == self.decimal:
-            return 0
-        else:
-            raise ValueError
-
-    def __float__(self):
-        if self.clasificacion == self.entero:
-            return float(self.contenido)
-        elif self.clasificacion == self.decimal:
-            return float("0." + self.contenido)
-        else:
-            return ValueError
-
-    def __str__(self):
-        cadena = 'Token <"{0}", {1}, {2}>'.format(self.contenido, self.clasificacion, self.__str_clasif())
-        return cadena
+    positivo = 1
+    negativo = -1
 
     def __repr__(self):
         return self.__str__()
@@ -129,90 +112,14 @@ class Token:
 
 
 class AnalizadorLexico(Token):
-    vacio = False
-
-    def __init__(self, raw_reng=""):
+    def __init__(self, raw_ecu: str):
         super().__init__()
-        if len(raw_reng) == 0:
-            raise EntradaVacia
-        self.raw_rang = raw_reng
-
-    def next_token(self):
-        print("next token")
-        if not self.vacio:
-            f = -1
-            estado = 0
-            buffer = ""
-            clasificacion = self.desconocido
-            raw_reng = self.raw_rang
-            # print(raw_reng)
-            while estado != f:
-                print(raw_reng)
-                if len(raw_reng) > 0:
-                    c = raw_reng[0].upper()
-                else:
-                    c = ""
-                print(c)
-                if c == '':
-                    break
-                if estado == 0:
-                    if c.isspace():
-                        pass
-                    elif c in ('+', '-'):
-                        estado = 1
-                        clasificacion = self.signo
-                    elif c.isdigit():
-                        estado = 2
-                        clasificacion = self.entero
-                    elif c == '.':
-                        estado = 3
-                        clasificacion = self.decimal
-                    elif c.isalpha():
-                        estado = 5
-                        clasificacion = self.incognita
-                    elif c == '/':
-                        estado = 7
-                        clasificacion = self.cociente
-                    elif c == '=':
-                        estado = 9
-                        clasificacion = self.igual
-                    elif c == ';':
-                        estado = 10
-                        clasificacion = self.fin_sel
-                    else:
-                        raise ErrorLexico
-                elif estado == 2:
-                    if c.isdigit():
-                        estado = 2
-                    else:
-                        estado = f
-                elif estado == 3:
-                    if c.isdigit():
-                        estado = 4
-                    else:
-                        raise ErrorLexico
-                elif estado == 4:
-                    if c.isdigit():
-                        pass
-                    else:
-                        estado = f
-                elif estado == 5:
-                    clasificacion = self.incognita
-                    estado = f
-                elif estado in (1, 7, 9):
-                    estado = f
-                elif estado == 10:
-                    raise FinMatriz
-                if estado > 0:
-                    buffer += c
-                if estado != f:
-                    raw_reng = raw_reng[1:]
-                    self.raw_rang = raw_reng
-                if len(self.raw_rang) == 0:
-                    self.vacio = True
-            return Token(buffer, clasificacion)
+        if len(raw_ecu) == 0:
+            self.vacio = True
         else:
-            return Token()
+            self.vacio = False
+        self.__raw_ecu = raw_ecu
+        self.__pos_i = 0
 
 class AnalizadorSintactico(Token):
     def __init__(self, tokens=()):
@@ -220,62 +127,50 @@ class AnalizadorSintactico(Token):
         # print(tokens)
         if len(tokens) == 0:
             raise EntradaVacia
-        self.tokens = []
-        for i in tokens:
-            self.tokens.append(i)
+        else:
+            self.vacio = False
 
-    def next_elemento(self, fracciones=True):
-        print("next elem")
-        numerador = ""
-        denominador = ""
-        incognita = "const"
-        f1 = -1
-        f2 = -2
-        f3 = -3
-        f4 = -4
+    def next_token(self):
+        log.debug("next token()")
+        log.debug("pos_i: " + str(self.__pos_i))
+        f = -1
         estado = 0
         while estado not in (f1, f2, f3, f4):
             if len(self.tokens) > 0:
                 t = self.tokens[0]
                 print(self.tokens)
                 print(t)
-
             if estado == 0:
-                if t.clasificacion == self.signo:
+                if c.isspace():
+                    pass
+                elif c in ('+', '-'):
                     estado = 1
-                    numerador += t.contenido
-                elif t.clasificacion == self.entero:
+                    self.clasificacion = self.signo
+                elif c.isdigit():
                     estado = 2
-                    numerador += t.contenido
-                elif t.clasificacion == self.decimal:
+                    self.clasificacion = self.entero
+                elif c == '.':
                     estado = 3
-                    numerador += t.contenido
-                elif t.clasificacion == self.incognita:
-                    estado = 4
-                elif t.clasificacion == self.igual:
-                    estado = f4
-                elif t.clasificacion == self.fin_sel:
-                    raise FinMatriz
+                    self.clasificacion = self.decimal
+                elif c.isalpha():
+                    estado = 5
+                    self.clasificacion = self.incognita
+                elif c == '/':
+                    estado = 7
+                    self.clasificacion = self.cociente
+                elif c == '=':
+                    estado = 9
+                    self.clasificacion = self.igual
+                elif c == ';':
+                    estado = 10
+                    self.clasificacion = self.fin_sel
                 else:
-                    raise ErrorSintactico
-            elif estado == 1:
-                if t.clasificacion == self.entero:
-                    estado = 2
-                elif t.clasificacion == self.decimal:
-                    estado = 3
-                elif t.clasificacion == self.incognita:
-                    estado = 4
-                else:
-                    raise ErrorSintactico
-                numerador += t.contenido
+                    raise ErrorLexico
             elif estado == 2:
-                if t.clasificacion == self.decimal:
-                    estado = 3
-                    numerador += t.contenido
-                elif t.clasificacion == self.cociente:
-                    estado = 6
+                if c.isdigit():
+                    estado = 2
                 else:
-                    estado = f1
+                    estado = f
             elif estado == 3:
                 if t.clasificacion == self.cociente:
                     estado = 6
@@ -285,7 +180,6 @@ class AnalizadorSintactico(Token):
                 if t.clasificacion == self.entero:
                     estado = 9
                 else:
-<<<<<<< HEAD
                     estado = f3
                 if numerador in ('+', '-'):
                     numerador += '1'
@@ -303,13 +197,10 @@ class AnalizadorSintactico(Token):
                 if t.clasificacion == self.incognita:
                     estado = 4
                 else:
-                    estado = f2
-            elif estado == 8:
-                if t.clasificacion == self.decimal:
-                    estado = 7
-                    denominador += t.contenido
-                elif t.clasificacion == self.incognita:
-                    estado = 4
+                    raise ErrorLexico
+            elif estado == 4:
+                if c.isdigit():
+                    pass
                 else:
                     estado = f2
             elif estado == 9:
@@ -322,7 +213,6 @@ class AnalizadorSintactico(Token):
         if estado in (f1, f2, f3):
             if fracciones:
                 coeficiente = Fraccion(float(numerador), float(denominador))
-=======
                     estado = f
             elif estado == 5:
                 self.clasificacion = self.incognita
@@ -363,7 +253,6 @@ class AnalizadorSintactico(AnalizadorLexico):
         if clasificacion == self.signo:
             if self.contenido == '+':
                 return self.positivo
->>>>>>> :u
             else:
                 return self.negativo
         if clasificacion == self.incognita:
@@ -547,7 +436,6 @@ class LectorSEL:
             except (ErrorLexico, ErrorSintactico) as error:
                 print(error)
                 continue
-<<<<<<< HEAD
             except ErrorSintactico as e_sint:
                 print(e_sint)
                 continue
@@ -578,8 +466,6 @@ class LectorSEL:
                 raise Reingreso
             break
         return sel, False
-=======
->>>>>>> :u
 
     def leer_sel(self):
         sel = SEL()
@@ -590,13 +476,11 @@ class LectorSEL:
             ecu = self.reducir(ecu)
             if fin_sel:
                 break
-<<<<<<< HEAD
             except Reingreso:
                 continue
             if not bandera:
                 break
         return matriz_coef
-=======
             ecuaciones.append(ecu)
             n_ecu += 1
         return ecuaciones
@@ -615,7 +499,6 @@ class LectorSEL:
             seg_miem["const"] -= prim_miem["const"]
             del prim_miem["const"]
         return prim_miem, seg_miem
->>>>>>> :u
 
 
 if __name__ == '__main__':

@@ -45,7 +45,7 @@ def print_lib_missing():
     
         Para acceder a las funciones de graficación por favor instale:
     
-        python3-mathplotlib >= 1.5.1
+        python3-matplotlib >= 1.5.1
     
         e intentelo de nuevo.
         ===========================================================================================""")
